@@ -4,6 +4,9 @@ import React, { useRef } from 'react';
 import { Menu } from 'primereact/menu';
 import { Toast } from 'primereact/toast';
 
+import Badge from 'react-bootstrap/Badge';
+import Button from 'react-bootstrap/Button';
+
 export default function App() {
     const toast = useRef(null);
   
@@ -36,10 +39,19 @@ export default function App() {
         }
     ];
 
-    return (
-        <div className="card flex justify-content-center">
+  return (
+    <>
+       <h1>
+        Example heading
+        <Badge bg="secondary" as={Button}>
+          New
+        </Badge>
+      </h1>
+      <div className="card flex justify-content-center">
             <Toast ref={toast} />
             <Menu model={items} />
         </div>
+    </>
+      
     )
 }
