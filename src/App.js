@@ -1,35 +1,45 @@
-import { useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 
-function App() {
-  const [show, setShow] = useState(false);
+import React, { useRef } from 'react';
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+import { Menu } from 'primereact/menu';
+import { Toast } from 'primereact/toast';
 
-  return (
-    <>
-      <Button variant="primary" onClick={handleShow}>
-        Launch demo modal
-      </Button>
+export default function App() {
+    const toast = useRef(null);
+  
+    const items = [
+        {
+            label: 'Documents',
+            items: [
+                {
+                    label: 'New',
+                    icon: 'pi pi-plus'
+                },
+                {
+                    label: 'Search',
+                    icon: 'pi pi-search'
+                }
+            ]
+        },
+        {
+            label: 'Profile',
+            items: [
+                {
+                    label: 'Settings',
+                    icon: 'pi pi-cog'
+                },
+                {
+                    label: 'Logout',
+                    icon: 'pi pi-sign-out'
+                }
+            ]
+        }
+    ];
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </>
-  );
+    return (
+        <div className="card flex justify-content-center">
+            <Toast ref={toast} />
+            <Menu model={items} />
+        </div>
+    )
 }
-
-export default App;
