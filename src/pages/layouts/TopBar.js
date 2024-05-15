@@ -5,7 +5,10 @@ import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { Button } from "primereact/button";
 
+import { useLayout } from "../../hooks/admin/layouts/use-layout.js";
+
 const TopBar = () => {
+  const { onMenuToggle } = useLayout();
   return (
     <>
       <Navbar className="bg-body-tertiary">
@@ -13,7 +16,7 @@ const TopBar = () => {
           <Navbar.Brand href="#home" style={{ display: "flex" }}>
             Admin Panel
             <Button link>
-              <i className="pi pi-bars"></i>
+              <i className="pi pi-bars" onClick={onMenuToggle}></i>
             </Button>
           </Navbar.Brand>
           <Navbar.Toggle />

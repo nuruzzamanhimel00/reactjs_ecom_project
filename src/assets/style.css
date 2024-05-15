@@ -134,3 +134,13 @@
     padding: 0;
     list-style-type: none;
 }
+
+.layout-wrapper.layout-static.layout-static-inactive .layout-sidebar {
+    transform: translateX(-100%);
+    left: 0;
+
+}
+.layout-wrapper.layout-static.layout-static-inactive .layout-main-container {
+    margin-left: 0;
+    padding-left: 2rem;
+}
