@@ -15,6 +15,9 @@ import "primeicons/primeicons.css";
 import { RouterProvider } from "react-router-dom";
 import router from "./routers";
 
+//import global css
+import "./assets/style.css";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
