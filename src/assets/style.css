@@ -27,7 +27,7 @@
 
 /* sidebar */
 .layout-sidebar {
-    position: fixed;
+    position: absolute;
     width: 300px;
     height: calc(100vh - 9rem);
     z-index: 999;
@@ -143,4 +143,16 @@
 .layout-wrapper.layout-static.layout-static-inactive .layout-main-container {
     margin-left: 0;
     padding-left: 2rem;
+}
+
+.layout-footer {
+    transition: margin-left .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1rem;
+    border-top: 1px solid #27374c;
+}
+.font-medium {
+    font-weight: 500 !important;
 }

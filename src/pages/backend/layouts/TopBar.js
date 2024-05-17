@@ -14,7 +14,7 @@ const TopBar = () => {
   return (
     <>
       <Navbar className="bg-body-tertiary">
-        <Container>
+        <Container fluid>
           <Navbar.Brand href="#home" style={{ display: "flex" }}>
             Admin Panel
             <Button link onClick={() => dispatch(cartActions.toggleMenuBar())}>

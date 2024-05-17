@@ -1,5 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import AdminRoot from "./AdminRoot.js";
+
+import Dashboard from "./../pages/backend/Dashboard";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -8,6 +10,7 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: <AdminRoot />,
+    children: [{ index: true, element: <Dashboard /> }],
   },
 ]);
 
