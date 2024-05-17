@@ -18,10 +18,16 @@ import router from "./routers";
 //import global css
 import "./assets/style.css";
 
+//redux toolkit
+import { store } from "./store";
+import { Provider } from "react-redux";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </React.StrictMode>
 );
 

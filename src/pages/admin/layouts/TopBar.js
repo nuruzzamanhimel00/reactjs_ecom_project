@@ -5,18 +5,20 @@ import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { Button } from "primereact/button";
 
-import { useLayout } from "../../hooks/admin/layouts/use-layout.js";
+import { useDispatch } from "react-redux";
+import { cartActions } from "../../../store/backend/layout-slice.js";
 
 const TopBar = () => {
-  const { onMenuToggle } = useLayout();
+  const dispatch = useDispatch();
+
   return (
     <>
       <Navbar className="bg-body-tertiary">
         <Container>
           <Navbar.Brand href="#home" style={{ display: "flex" }}>
             Admin Panel
-            <Button link>
-              <i className="pi pi-bars" onClick={onMenuToggle}></i>
+            <Button link onClick={() => dispatch(cartActions.toggleMenuBar())}>
+              <i className="pi pi-bars"></i>
             </Button>
           </Navbar.Brand>
           <Navbar.Toggle />

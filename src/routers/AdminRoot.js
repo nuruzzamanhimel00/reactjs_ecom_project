@@ -1,18 +1,14 @@
-import React, { useEffect } from "react";
-import TopBar from "../pages/layouts/TopBar.js";
-import SideBar from "../pages/layouts/SideBar.js";
-import { useLayout } from "../hooks/admin/layouts/use-layout.js";
+import React from "react";
+import TopBar from "../pages/backend/layouts/TopBar.js";
+import SideBar from "../pages/backend/layouts/SideBar.js";
+import { useSelector } from "react-redux";
 const AdminRoot = () => {
-  const layout = useLayout();
-  console.log("AdminRoot", layout);
-  // const { isMenueOpen } = layoutContext;
-  useEffect(() => {
-    console.log("AdminRoot use effect");
-  }, [layout]);
-  // const toggleMenue = layoutContext.isMenueOpen ? "layout-static-inactive" : "";
+  const isMenuOpen = useSelector((state) => state.adminLayout.isMenuOpen);
+
+  const toggleMenueClass = isMenuOpen ? "layout-static-inactive" : "";
   return (
     <>
-      <div className={`layout-wrapper layout-static `}>
+      <div className={`layout-wrapper layout-static ${toggleMenueClass}`}>
         {/* topbar  */}
         <TopBar />
         {/* topbar end */}
