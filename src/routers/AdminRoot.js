@@ -5,6 +5,7 @@ import FooterBar from "../pages/backend/layouts/FooterBar.js";
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { authActions } from "../store/backend/auth-slice.js";
+// import { cartActions } from "../store/backend/layout-slice.js";
 //react router
 import { Outlet, useLoaderData, Navigate } from "react-router-dom";
 //service
@@ -12,6 +13,8 @@ import { httpRequest } from "../services/CommonService.js";
 import { getSessionToken } from "../services/backend/AuthService.js";
 //api url
 import { authUserUrl } from "../helpers/apiRoutes/index.js";
+//react spinner
+import BounceLoader from "react-spinners/BounceLoader";
 
 export const loader = async () => {
   let token = sessionStorage.getItem("token");
@@ -34,11 +37,21 @@ export const loader = async () => {
       return "";
     });
 };
+const override = {
+  position: "fixed",
+  top: "50%",
+  left: "50%",
+  borderColor: "red",
+  backgroundColor: "red",
+  borderRadius: "50%",
+};
 
 const AdminRoot = () => {
   //redux
   const dispatch = useDispatch();
   const isMenuOpen = useSelector((state) => state.adminLayout.isMenuOpen);
+  const isLoading = useSelector((state) => state.adminLayout.isLoading);
+  //react route
 
   const authUser = useLoaderData();
   if (!authUser.hasOwnProperty("name")) {
@@ -69,6 +82,16 @@ const AdminRoot = () => {
           </div>
           <FooterBar />
         </div>
+
+        {/* spinner  */}
+        <BounceLoader
+          color={`#FFF`}
+          loading={isLoading}
+          cssOverride={override}
+          size={150}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
       </div>
     </>
   );

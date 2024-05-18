@@ -3,12 +3,24 @@ import style from "./AdminLogin.module.css";
 //redux
 import { useDispatch } from "react-redux";
 import { authActions } from "../../../store/backend/auth-slice.js";
+
 //react router
 import { useNavigate, Navigate, useLoaderData } from "react-router-dom";
 //service
 import { httpRequest } from "../../../services/CommonService.js";
 //api router
 import { useLoginUrl, authUserUrl } from "../../../helpers/apiRoutes/index.js";
+//react spinner
+import BounceLoader from "react-spinners/BounceLoader";
+const override = {
+  position: "fixed",
+  top: "50%",
+  left: "50%",
+  borderColor: "red",
+  backgroundColor: "red",
+  borderRadius: "50%",
+  zIndex: "9999",
+};
 
 export const loader = async () => {
   let token = sessionStorage.getItem("token");
@@ -36,8 +48,10 @@ const AdminLogin = () => {
     email: "admin@app.com",
     password: "12345678",
   });
+  let [loading, setLoading] = useState(false);
   //redux
   const dispatch = useDispatch();
+  // const isLoading = useSelector((state) => state.adminLayout.isLoading);
 
   const navigate = useNavigate();
 
@@ -63,6 +77,7 @@ const AdminLogin = () => {
     event.preventDefault();
 
     if (input.email !== "" && input.password !== "") {
+      setLoading(true);
       httpRequest({
         url: useLoginUrl,
         method: "POST",
@@ -75,6 +90,7 @@ const AdminLogin = () => {
         },
       })
         .then((response) => {
+          setLoading(false);
           if (response.hasOwnProperty("status") && response.status) {
             dispatch(
               authActions.setLoginData({
@@ -87,6 +103,7 @@ const AdminLogin = () => {
           // console.log("then result", response, response.status);
         })
         .catch((error) => {
+          setLoading(false);
           console.log("catch result", error);
         });
     } else {
@@ -97,6 +114,15 @@ const AdminLogin = () => {
 
   return (
     <>
+      {/* spinner  */}
+      <BounceLoader
+        color={`#FFF`}
+        loading={loading}
+        cssOverride={override}
+        size={150}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+      />
       <div className={style.container}>
         <div className={style.screen}>
           <div className={style.screen__content}>
