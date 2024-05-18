@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import AdminRoot from "./AdminRoot.js";
 
 import Dashboard from "./../pages/backend/Dashboard";
@@ -24,13 +24,12 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        // path: "dashboard",
+        element: <Navigate to="dashboard" replace />,
+      },
+      {
+        path: "dashboard",
         element: <Dashboard />,
       },
-      // {
-      //   path: "login",
-      //   element: <AdminLogin />,
-      // },
     ],
   },
 ]);
