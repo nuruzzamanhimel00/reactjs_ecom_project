@@ -1,26 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { useLoginUrl } from "../../helpers/apiRoutes/index.js";
-import { makeLogin } from "../../services/backend/AuthService.js";
+
+function setSessionToken(userToken) {
+  sessionStorage.setItem("token", JSON.stringify(userToken));
+}
 
 const initialState = {
   user: {},
   token: null,
   isAuth: false,
 };
+
 const allReducers = {
-  login(state, action) {
-    let response = makeLogin({
-      url: useLoginUrl,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: {
-        email: action.payload.email,
-        password: action.payload.password,
-      },
-    });
-    console.log("login", action, response);
+  setLoginData(state, action) {
+    // console.log("setLoginData", action.payload);
+    setSessionToken(action.payload.token);
+    state.isAuth = true;
+    state.user = action.payload.user;
+    state.token = action.payload.token;
   },
 };
 const authSlice = createSlice({

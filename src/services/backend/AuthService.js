@@ -6,7 +6,13 @@ export function makeLogin(requestConfig) {
       headers: requestConfig.headers ? requestConfig.headers : {},
       body: requestConfig.body ? JSON.stringify(requestConfig.body) : null,
     })
-      .then((response) => console.log("response", response))
+      .then((response) => resolve(response.json()))
       .catch((error) => reject(error));
   });
+}
+
+export function getSessionToken() {
+  const tokenString = sessionStorage.getItem("token");
+  const userToken = JSON.parse(tokenString);
+  return userToken?.token;
 }
