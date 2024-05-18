@@ -4,11 +4,32 @@ import style from "./AdminLogin.module.css";
 import { useDispatch } from "react-redux";
 import { authActions } from "../../../store/backend/auth-slice.js";
 //react router
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate, useLoaderData } from "react-router-dom";
 //service
 import { httpRequest } from "../../../services/CommonService.js";
 //api router
-import { useLoginUrl } from "../../../helpers/apiRoutes/index.js";
+import { useLoginUrl, authUserUrl } from "../../../helpers/apiRoutes/index.js";
+
+export const loader = async () => {
+  let token = sessionStorage.getItem("token");
+
+  return await httpRequest({
+    url: authUserUrl,
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  })
+    .then((response) => {
+      return response;
+      // console.log("loader result", response);
+    })
+    .catch((error) => {
+      return "";
+    });
+};
 
 const AdminLogin = () => {
   const [input, setInput] = useState({
@@ -16,8 +37,14 @@ const AdminLogin = () => {
     password: "12345678",
   });
   const dispatch = useDispatch();
-  // const isAuth = useSelector((state) => state.auth.isAuth);
+
   const navigate = useNavigate();
+
+  const authUser = useLoaderData();
+
+  if (authUser.hasOwnProperty("name")) {
+    return <Navigate to="/admin" replace={true} />;
+  }
 
   const inputHandler = (event) => {
     const { name, value } = event.target;

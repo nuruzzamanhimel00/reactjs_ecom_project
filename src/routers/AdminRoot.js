@@ -13,7 +13,7 @@ import { authUserUrl } from "../helpers/apiRoutes/index.js";
 
 export const loader = async () => {
   let token = sessionStorage.getItem("token");
-  // console.log("token", token);
+  if (!token) return <Navigate to="/admin/login" replace={true} />;
   return await httpRequest({
     url: authUserUrl,
     method: "GET",
@@ -29,7 +29,6 @@ export const loader = async () => {
     })
     .catch((error) => {
       return "";
-      // console.log("catch result", error);
     });
 };
 

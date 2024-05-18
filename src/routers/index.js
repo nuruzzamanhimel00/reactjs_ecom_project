@@ -5,6 +5,7 @@ import Dashboard from "./../pages/backend/Dashboard";
 import AdminLogin from "../pages/backend/auth/AdminLogin.js";
 
 import { loader as admiRootLoader } from "./AdminRoot.js";
+import { loader as adminLoginLoader } from "../pages/backend/auth/AdminLogin.js";
 
 const router = createBrowserRouter([
   {
@@ -14,6 +15,7 @@ const router = createBrowserRouter([
   {
     path: "/admin/login",
     element: <AdminLogin />,
+    loader: adminLoginLoader,
   },
   {
     path: "/admin",
