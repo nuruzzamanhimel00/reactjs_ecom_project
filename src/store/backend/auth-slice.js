@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 function setSessionToken(userToken) {
-  sessionStorage.setItem("token", JSON.stringify(userToken));
+  sessionStorage.setItem("token", JSON.stringify(userToken).replace(/"/g, ""));
 }
 
 const initialState = {

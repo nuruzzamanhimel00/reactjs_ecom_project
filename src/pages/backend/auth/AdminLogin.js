@@ -6,7 +6,7 @@ import { authActions } from "../../../store/backend/auth-slice.js";
 //react router
 import { useNavigate } from "react-router-dom";
 //service
-import { makeLogin } from "../../../services/backend/AuthService.js";
+import { httpRequest } from "../../../services/CommonService.js";
 //api router
 import { useLoginUrl } from "../../../helpers/apiRoutes/index.js";
 
@@ -15,7 +15,6 @@ const AdminLogin = () => {
     email: "admin@app.com",
     password: "12345678",
   });
-  // const navigate = useNavigate();
   const dispatch = useDispatch();
   // const isAuth = useSelector((state) => state.auth.isAuth);
   const navigate = useNavigate();
@@ -34,7 +33,7 @@ const AdminLogin = () => {
     event.preventDefault();
 
     if (input.email !== "" && input.password !== "") {
-      makeLogin({
+      httpRequest({
         url: useLoginUrl,
         method: "POST",
         headers: {
@@ -60,9 +59,6 @@ const AdminLogin = () => {
         .catch((error) => {
           console.log("catch result", error);
         });
-      // dispatch(
-      //   authActions.login({ email: input.email, password: input.password })
-      // );
     } else {
       alert("All FIeld is required!!");
     }
