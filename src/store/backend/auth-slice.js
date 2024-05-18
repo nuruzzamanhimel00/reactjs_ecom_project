@@ -3,6 +3,9 @@ import { createSlice } from "@reduxjs/toolkit";
 function setSessionToken(userToken) {
   sessionStorage.setItem("token", JSON.stringify(userToken).replace(/"/g, ""));
 }
+function removeSessionToken(userToken) {
+  sessionStorage.removeItem("token");
+}
 
 const initialState = {
   user: {},
@@ -11,6 +14,12 @@ const initialState = {
 };
 
 const allReducers = {
+  resetAuthData(state) {
+    state.user = {};
+    state.token = null;
+    state.isAuth = false;
+    removeSessionToken();
+  },
   setLoginData(state, action) {
     // console.log("setLoginData", action.payload);
     setSessionToken(action.payload.token);

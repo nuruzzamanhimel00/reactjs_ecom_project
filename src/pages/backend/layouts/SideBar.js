@@ -13,7 +13,7 @@ const SideBar = () => {
         {
           label: "User",
           icon: "pi pi-fw pi-id-card",
-          to: "/",
+          to: "/admin/test",
         },
       ],
     },

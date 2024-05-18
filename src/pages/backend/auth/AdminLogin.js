@@ -36,6 +36,7 @@ const AdminLogin = () => {
     email: "admin@app.com",
     password: "12345678",
   });
+  //redux
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
@@ -45,6 +46,8 @@ const AdminLogin = () => {
   if (authUser.hasOwnProperty("name")) {
     return <Navigate to="/admin" replace={true} />;
   }
+
+  // console.log("authUser login", authUser);
 
   const inputHandler = (event) => {
     const { name, value } = event.target;
