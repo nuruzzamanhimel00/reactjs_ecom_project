@@ -20,7 +20,6 @@ const TopBar = () => {
 
   const logoutHandler = (event) => {
     event.preventDefault();
-    dispatch(cartActions.spinnerLoading(true));
     dispatch(authActions.resetAuthData());
     navigate("/admin/login");
   };

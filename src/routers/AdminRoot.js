@@ -52,8 +52,8 @@ const AdminRoot = () => {
   const isMenuOpen = useSelector((state) => state.adminLayout.isMenuOpen);
   const isLoading = useSelector((state) => state.adminLayout.isLoading);
   //react route
-
   const authUser = useLoaderData();
+
   if (!authUser.hasOwnProperty("name")) {
     return <Navigate to="/admin/login" replace={true} />;
   } else {

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import style from "./AdminLogin.module.css";
 //redux
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authActions } from "../../../store/backend/auth-slice.js";
+import { cartActions } from "../../../store/backend/layout-slice.js";
 
 //react router
 import { useNavigate, Navigate, useLoaderData } from "react-router-dom";
@@ -12,6 +13,11 @@ import { httpRequest } from "../../../services/CommonService.js";
 import { useLoginUrl, authUserUrl } from "../../../helpers/apiRoutes/index.js";
 //react spinner
 import BounceLoader from "react-spinners/BounceLoader";
+//prime react
+import { Toast } from "primereact/toast";
+//import components
+// import ToastNotifications from "../../../components/ToastNotifications.js";
+
 const override = {
   position: "fixed",
   top: "50%",
@@ -48,14 +54,21 @@ const AdminLogin = () => {
     email: "admin@app.com",
     password: "12345678",
   });
-  let [loading, setLoading] = useState(false);
+  // let [loading, setLoading] = useState(false);
   //redux
   const dispatch = useDispatch();
-  // const isLoading = useSelector((state) => state.adminLayout.isLoading);
+  const isLoading = useSelector((state) => state.adminLayout.isLoading);
+  // const toastNotification = useSelector(
+  //   (state) => state.adminLayout.toastNotification
+  // );
+
+  // console.log("toastNotification adminlogin", toastNotification);
 
   const navigate = useNavigate();
 
   const authUser = useLoaderData();
+
+  const toast = useRef(null);
 
   if (authUser.hasOwnProperty("name")) {
     return <Navigate to="/admin" replace={true} />;
@@ -73,12 +86,12 @@ const AdminLogin = () => {
     });
   };
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
 
     if (input.email !== "" && input.password !== "") {
-      setLoading(true);
-      httpRequest({
+      dispatch(cartActions.spinnerLoading(true));
+      await httpRequest({
         url: useLoginUrl,
         method: "POST",
         headers: {
@@ -90,7 +103,7 @@ const AdminLogin = () => {
         },
       })
         .then((response) => {
-          setLoading(false);
+          dispatch(cartActions.spinnerLoading(false));
           if (response.hasOwnProperty("status") && response.status) {
             dispatch(
               authActions.setLoginData({
@@ -98,12 +111,25 @@ const AdminLogin = () => {
                 user: response.user,
               })
             );
-            navigate("/admin");
+            toast.current.show({
+              severity: "success",
+              summary: "Success",
+              detail: response.message,
+              life: 3000,
+            });
+            navigate("/admin/dashboard");
+          } else {
+            toast.current.show({
+              severity: "error",
+              summary: "Error",
+              detail: response.message,
+              life: 3000,
+            });
           }
           // console.log("then result", response, response.status);
         })
         .catch((error) => {
-          setLoading(false);
+          dispatch(cartActions.spinnerLoading(false));
           console.log("catch result", error);
         });
     } else {
@@ -114,10 +140,12 @@ const AdminLogin = () => {
 
   return (
     <>
+      <Toast ref={toast} />
+
       {/* spinner  */}
       <BounceLoader
         color={`#FFF`}
-        loading={loading}
+        loading={isLoading}
         cssOverride={override}
         size={150}
         aria-label="Loading Spinner"
