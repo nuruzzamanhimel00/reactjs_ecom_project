@@ -1,7 +1,8 @@
 import React, { useState, useRef } from "react";
 import style from "./AdminLogin.module.css";
+import Spinner from "../../../components/Spinner.js";
 //redux
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { authActions } from "../../../store/backend/auth-slice.js";
 import { cartActions } from "../../../store/backend/layout-slice.js";
 
@@ -11,22 +12,11 @@ import { useNavigate, Navigate, useLoaderData } from "react-router-dom";
 import { httpRequest } from "../../../services/CommonService.js";
 //api router
 import { useLoginUrl, authUserUrl } from "../../../helpers/apiRoutes/index.js";
-//react spinner
-import BounceLoader from "react-spinners/BounceLoader";
+
 //prime react
 import { Toast } from "primereact/toast";
 //import components
 // import ToastNotifications from "../../../components/ToastNotifications.js";
-
-const override = {
-  position: "fixed",
-  top: "50%",
-  left: "50%",
-  borderColor: "red",
-  backgroundColor: "red",
-  borderRadius: "50%",
-  zIndex: "9999",
-};
 
 export const loader = async () => {
   let token = sessionStorage.getItem("token");
@@ -54,10 +44,10 @@ const AdminLogin = () => {
     email: "admin@app.com",
     password: "12345678",
   });
-  // let [loading, setLoading] = useState(false);
+
   //redux
   const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.adminLayout.isLoading);
+
   // const toastNotification = useSelector(
   //   (state) => state.adminLayout.toastNotification
   // );
@@ -73,6 +63,8 @@ const AdminLogin = () => {
   if (authUser.hasOwnProperty("name")) {
     return <Navigate to="/admin" replace={true} />;
   }
+
+  console.log("add Login function");
 
   // console.log("authUser login", authUser);
 
@@ -143,14 +135,7 @@ const AdminLogin = () => {
       <Toast ref={toast} />
 
       {/* spinner  */}
-      <BounceLoader
-        color={`#FFF`}
-        loading={isLoading}
-        cssOverride={override}
-        size={150}
-        aria-label="Loading Spinner"
-        data-testid="loader"
-      />
+      <Spinner />
       <div className={style.container}>
         <div className={style.screen}>
           <div className={style.screen__content}>
