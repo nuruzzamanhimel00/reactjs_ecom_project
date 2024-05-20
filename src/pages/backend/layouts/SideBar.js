@@ -5,7 +5,13 @@ const SideBar = () => {
   const items = [
     {
       label: "Home",
-      items: [{ label: "Dashboard", icon: "pi pi-fw pi-home", to: "/admin" }],
+      items: [
+        {
+          label: "Dashboard",
+          icon: "pi pi-fw pi-home",
+          to: "/admin/dashboard",
+        },
+      ],
     },
     {
       label: "UI Components",
@@ -14,6 +20,11 @@ const SideBar = () => {
           label: "User",
           icon: "pi pi-fw pi-id-card",
           to: "/admin/test",
+        },
+        {
+          label: "Hello world",
+          icon: "pi pi-fw pi-id-card",
+          to: "/admin/hello-world",
         },
       ],
     },

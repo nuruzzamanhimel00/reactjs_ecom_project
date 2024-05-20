@@ -2,6 +2,7 @@ import React from "react";
 import TopBar from "../pages/backend/layouts/TopBar.js";
 import SideBar from "../pages/backend/layouts/SideBar.js";
 import FooterBar from "../pages/backend/layouts/FooterBar.js";
+import ProgressBar from "../components/ProgressBar.js";
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { authActions } from "../store/backend/auth-slice.js";
@@ -70,6 +71,8 @@ const AdminRoot = () => {
   return (
     <>
       <div className={`layout-wrapper layout-static ${toggleMenueClass}`}>
+        {/* progess bar  */}
+        <ProgressBar />
         {/* topbar  */}
         <TopBar />
         {/* topbar end */}
