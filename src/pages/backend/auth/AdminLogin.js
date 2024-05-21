@@ -1,10 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import style from "./AdminLogin.module.css";
 import Spinner from "../../../components/Spinner.js";
 //redux
 import { useDispatch } from "react-redux";
 import { authActions } from "../../../store/backend/auth-slice.js";
-import { cartActions } from "../../../store/backend/layout-slice.js";
 
 //react router
 import { useNavigate, Navigate, useLoaderData } from "react-router-dom";
@@ -14,7 +13,8 @@ import { httpRequest } from "../../../services/CommonService.js";
 import { useLoginUrl, authUserUrl } from "../../../helpers/apiRoutes/index.js";
 
 //prime react
-import { Toast } from "primereact/toast";
+import { Toast, NProgress } from "../../../helpers/global-files.js";
+
 //import components
 // import ToastNotifications from "../../../components/ToastNotifications.js";
 
@@ -44,15 +44,12 @@ const AdminLogin = () => {
     email: "admin@app.com",
     password: "12345678",
   });
+  useEffect(() => {
+    NProgress.done();
+  }, []);
 
   //redux
   const dispatch = useDispatch();
-
-  // const toastNotification = useSelector(
-  //   (state) => state.adminLayout.toastNotification
-  // );
-
-  // console.log("toastNotification adminlogin", toastNotification);
 
   const navigate = useNavigate();
 
@@ -63,10 +60,6 @@ const AdminLogin = () => {
   if (authUser.hasOwnProperty("name")) {
     return <Navigate to="/admin" replace={true} />;
   }
-
-  console.log("add Login function");
-
-  // console.log("authUser login", authUser);
 
   const inputHandler = (event) => {
     const { name, value } = event.target;
@@ -82,7 +75,8 @@ const AdminLogin = () => {
     event.preventDefault();
 
     if (input.email !== "" && input.password !== "") {
-      dispatch(cartActions.spinnerLoading(true));
+      // dispatch(cartActions.spinnerLoading(true));
+      NProgress.start();
       await httpRequest({
         url: useLoginUrl,
         method: "POST",
@@ -95,7 +89,7 @@ const AdminLogin = () => {
         },
       })
         .then((response) => {
-          dispatch(cartActions.spinnerLoading(false));
+          NProgress.done();
           if (response.hasOwnProperty("status") && response.status) {
             dispatch(
               authActions.setLoginData({
@@ -121,7 +115,7 @@ const AdminLogin = () => {
           // console.log("then result", response, response.status);
         })
         .catch((error) => {
-          dispatch(cartActions.spinnerLoading(false));
+          NProgress.done();
           console.log("catch result", error);
         });
     } else {

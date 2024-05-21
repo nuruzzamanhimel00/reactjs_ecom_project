@@ -1,26 +1,14 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import {
+  React,
+  ReactDOM,
+  reportWebVitals,
+  RouterProvider,
+  router,
+  store,
+  Provider,
+} from "./helpers/global-files.js";
 import "./index.css";
-
-import reportWebVitals from "./reportWebVitals";
-
-//bootstrap
-import "bootstrap/dist/css/bootstrap.min.css";
-
-//prime react
-import "primereact/resources/themes/lara-light-cyan/theme.css";
-import "primeicons/primeicons.css";
-
-//react router
-import { RouterProvider } from "react-router-dom";
-import router from "./routers";
-
-//import global css
-import "./assets/style.css";
-
-//redux toolkit
-import { store } from "./store";
-import { Provider } from "react-redux";
+import "./helpers/gloabl-css.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import NProgress from "nprogress";
-import "nprogress/nprogress.css";
+// import "nprogress/nprogress.css";
 
 const ProgressBar = () => {
   const location = useLocation();

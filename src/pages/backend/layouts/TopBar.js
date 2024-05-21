@@ -12,6 +12,8 @@ import { authActions } from "../../../store/backend/auth-slice.js";
 //react router
 import { useNavigate } from "react-router-dom";
 
+import { NProgress } from "../../../helpers/global-files.js";
+
 const TopBar = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
@@ -21,6 +23,7 @@ const TopBar = () => {
   const logoutHandler = (event) => {
     event.preventDefault();
     dispatch(authActions.resetAuthData());
+    NProgress.done();
     navigate("/admin/login");
   };
 
