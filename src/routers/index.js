@@ -2,9 +2,9 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import AdminRoot from "./AdminRoot.js";
 
 import Dashboard from "./../pages/backend/Dashboard";
-import Test from "./../pages/backend/Test";
-import HelloWorld from "./../pages/backend/HelloWorld.js";
 import AdminLogin from "../pages/backend/auth/AdminLogin.js";
+//category
+import CategoryTypeList from "../pages/backend/category-types/CategoryTypeList.js";
 
 import { loader as admiRootLoader } from "./AdminRoot.js";
 import { loader as adminLoginLoader } from "../pages/backend/auth/AdminLogin.js";
@@ -29,17 +29,14 @@ const router = createBrowserRouter([
         element: <Navigate to="dashboard" replace />,
         // element: <Dashboard />,
       },
-      {
-        path: "test",
-        element: <Test />,
-      },
+
       {
         path: "dashboard",
         element: <Dashboard />,
       },
       {
-        path: "hello-world",
-        element: <HelloWorld />,
+        path: "category-type-list",
+        element: <CategoryTypeList />,
       },
     ],
   },

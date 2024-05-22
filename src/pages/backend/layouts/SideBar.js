@@ -14,17 +14,12 @@ const SideBar = () => {
       ],
     },
     {
-      label: "UI Components",
+      label: "Products",
       items: [
         {
-          label: "User",
-          icon: "pi pi-fw pi-id-card",
-          to: "/admin/test",
-        },
-        {
-          label: "Hello world",
-          icon: "pi pi-fw pi-id-card",
-          to: "/admin/hello-world",
+          label: "Category Types",
+          icon: "pi pi-clone",
+          to: "/admin/category-type-list",
         },
       ],
     },
