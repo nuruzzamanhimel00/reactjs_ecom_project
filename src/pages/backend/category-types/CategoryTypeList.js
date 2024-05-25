@@ -107,6 +107,7 @@ const CategoryTypeList = () => {
     );
   };
   const onPage = async (event) => {
+    console.log("event", event);
     defaultLazyData = {
       ...event,
       page: event.page + 1,
@@ -336,7 +337,7 @@ const CategoryTypeList = () => {
                   header={header}
                   footer={footer}
                   value={categoryTypes}
-                  rows={10}
+                  rows={defaultLazyData.rows}
                   rowsPerPageOptions={[5, 10, 25, 50]}
                   tableStyle={{ minWidth: "50rem" }}
                   //lazy loading
