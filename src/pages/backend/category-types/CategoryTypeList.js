@@ -30,8 +30,8 @@ let defaultLazyData = {
   first: 0,
   rows: 10,
   page: 1,
-  sortField: null,
-  sortOrder: null,
+  sortField: "",
+  sortOrder: "",
   filters: ["name", "status"],
   totalPages: 0,
 };
@@ -113,17 +113,6 @@ const CategoryTypeList = () => {
     };
     await getProductCategory(defaultLazyData);
   };
-  const onSort = (event) => {
-    defaultLazyData = {
-      ...defaultLazyData,
-      ...event,
-    };
-
-    setlazyState((prevData) => {
-      return { ...prevData, ...defaultLazyData };
-    });
-    console.log("on sort", event);
-  };
 
   const onGlobalFilterChange = (e) => {
     const value = e.target.value;
@@ -135,6 +124,22 @@ const CategoryTypeList = () => {
 
     // setFilters(_filters);
     setGlobalFilterValue(value);
+  };
+  const onSort = async (event) => {
+    setLoading(true);
+    NProgress.start();
+    defaultLazyData = {
+      ...defaultLazyData,
+      ...event,
+    };
+
+    setlazyState((prevData) => {
+      return { ...prevData, ...defaultLazyData };
+    });
+    await getProductCategory(defaultLazyData);
+    NProgress.done();
+    setLoading(false);
+    console.log("on sort", event);
   };
 
   const createHandler = () => {
