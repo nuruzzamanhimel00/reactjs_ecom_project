@@ -24,6 +24,10 @@ import {
   autoTable,
 } from "../../../helpers/global-files";
 
+//excel
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
+
 let defaultLazyData = {
   first: 0,
   rows: 10,
@@ -145,6 +149,38 @@ const CategoryTypeList = () => {
     }, 1000);
   };
 
+  const generateExcelHandler = () => {
+    setLoading(true);
+    NProgress.start();
+    setTimeout(() => {
+      NProgress.done();
+      setLoading(false);
+      if (categoryTypes.length > 0) {
+        let newCategoryTypes = categoryTypes.map((category, key) => {
+          return {
+            no: key + 1,
+            name: category.name,
+            status: category.status,
+          };
+        });
+
+        const worksheet = XLSX.utils.json_to_sheet(newCategoryTypes);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "category-types");
+        const excelBuffer = XLSX.write(workbook, {
+          bookType: "xlsx",
+          type: "array",
+        });
+        const blob = new Blob([excelBuffer], {
+          type: "application/octet-stream",
+        });
+        saveAs(blob, "category-types.xlsx");
+
+        console.log("newCategoryTypes", newCategoryTypes);
+      }
+    }, 1000);
+  };
+
   const pdfGenerateHandler = () => {
     setLoading(true);
     NProgress.start();
@@ -193,7 +229,7 @@ const CategoryTypeList = () => {
             rounded
             loading={loading}
             className="rounded-pill me-2"
-            onClick={createHandler}
+            onClick={generateExcelHandler}
             size="small"
           />
           <Button
