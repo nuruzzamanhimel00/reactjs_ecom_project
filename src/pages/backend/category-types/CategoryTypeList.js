@@ -38,7 +38,7 @@ const CategoryTypeList = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   // const [customers, setCustomers] = useState(null);
   // const [selectAll, setSelectAll] = useState(false);
-  // const [lazyState, setlazyState] = useState({ ...defaultLazyData });
+  const [lazyState, setlazyState] = useState({ ...defaultLazyData });
 
   useEffect(() => {
     getProductCategory(defaultLazyData);
@@ -64,6 +64,9 @@ const CategoryTypeList = () => {
             ...data,
             totalPages: response.total,
           };
+          setlazyState((prevData) => {
+            return { ...prevData, ...defaultLazyData };
+          });
         }
         console.log("response", response);
         // console.log("loader result", response);
@@ -89,10 +92,20 @@ const CategoryTypeList = () => {
       ...event,
       page: event.page + 1,
     };
-    // setlazyState((prev) => ({ ...prev, ...event, page: event.page + 1 }));
     await getProductCategory(defaultLazyData);
-    console.log("onpage", event, defaultLazyData);
   };
+  const onSort = (event) => {
+    defaultLazyData = {
+      ...defaultLazyData,
+      ...event,
+    };
+
+    setlazyState((prevData) => {
+      return { ...prevData, ...defaultLazyData };
+    });
+    console.log("on sort", event);
+  };
+
   const onGlobalFilterChange = (e) => {
     const value = e.target.value;
 
@@ -163,33 +176,53 @@ const CategoryTypeList = () => {
           <Col md={12}>
             <Card>
               <Card.Body>
-                {/* <DataTable
-                  value={categoryTypes}
+                <DataTable
                   header={header}
                   footer={footer}
+                  value={categoryTypes}
+                  rows={10}
+                  rowsPerPageOptions={[5, 10, 25, 50]}
                   tableStyle={{ minWidth: "50rem" }}
-                  resizableColumns
-                  columnResizeMode="expand"
+                  //lazy loading
+                  paginator
+                  first={lazyState.first}
+                  totalRecords={totalRecords}
+                  onPage={onPage}
+                  loading={loading}
+                  lazy
+                  //sort
+                  onSort={onSort}
+                  sortField={lazyState.sortField}
+                  sortOrder={lazyState.sortOrder}
+                  //others
                   showGridlines
                   stripedRows
-                  rowsPerPageOptions={[5, 10, 25, 50]}
-                  removableSort
-                  dataKey="id"
                   emptyMessage="Data not found!!"
                   //checkbox
                   selectionMode={null}
                   selection={selectedCategoryTypes}
                   onSelectionChange={(e) => setSelectedCategoryTypes(e.value)}
-                  //lazy loading
-                  paginator
-                  first={lazyState.first}
-                  rows={10}
-                  totalRecords={totalRecords}
-                  onPage={onPage}
-                  loading={loading}
-                  lazy
-                > */}
-                <DataTable
+                >
+                  <Column
+                    selectionMode="multiple"
+                    headerStyle={{ width: "3rem" }}
+                  ></Column>
+                  <Column
+                    field="image"
+                    header="Image"
+                    body={imageBodyTemplate}
+                  ></Column>
+
+                  <Column field="name" header="Name" sortable></Column>
+
+                  <Column
+                    field="status"
+                    header="Status"
+                    body={statusBodyTemplate}
+                    sortable
+                  ></Column>
+                </DataTable>
+                {/* <DataTable
                   value={categoryTypes}
                   header={header}
                   footer={footer}
@@ -210,23 +243,30 @@ const CategoryTypeList = () => {
                   onPage={onPage}
                   loading={loading}
                   lazy
+                  //sort
+                  onSort={onSort}
+                  sortField={defaultLazyData.sortField}
+                  sortOrder={defaultLazyData.sortOrder}
                 >
+              
                   <Column
                     selectionMode="multiple"
                     headerStyle={{ width: "3rem" }}
                   ></Column>
-                  <Column field="name" header="Name" sortable></Column>
                   <Column
+                    field="image"
                     header="Image"
                     body={imageBodyTemplate}
-                    sortable
                   ></Column>
+
+                  <Column field="name" header="Name" sortable></Column>
+
                   <Column
+                    field="status"
                     header="Status"
                     body={statusBodyTemplate}
-                    sortable
                   ></Column>
-                </DataTable>
+                </DataTable> */}
               </Card.Body>
             </Card>
           </Col>
