@@ -32,16 +32,17 @@ let defaultLazyData = {
   page: 1,
   sortField: "",
   sortOrder: "",
-  filters: ["name", "status"],
+  search: "",
   totalPages: 0,
 };
+
+let searchColumn = "";
 
 const CategoryTypeList = () => {
   //react router
   const navigate = useNavigate();
   const [categoryTypes, setCategoryTypes] = useState([]);
   //datatable
-  const [globalFilterValue, setGlobalFilterValue] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -55,6 +56,22 @@ const CategoryTypeList = () => {
   useEffect(() => {
     getProductCategory(defaultLazyData);
   }, []);
+
+  const onGlobalFilterChange = async (e) => {
+    clearTimeout(searchColumn);
+    const value = e.target.value;
+    searchColumn = setTimeout(async () => {
+      setLoading(true);
+      NProgress.start();
+      defaultLazyData = {
+        ...defaultLazyData,
+        search: value,
+      };
+      await getProductCategory(defaultLazyData);
+      NProgress.done();
+      setLoading(false);
+    }, 1000);
+  };
 
   const getProductCategory = async (data) => {
     let url = makeQueryStringUrl(categoryTypeListUrl, data);
@@ -107,7 +124,6 @@ const CategoryTypeList = () => {
     );
   };
   const onPage = async (event) => {
-    console.log("event", event);
     defaultLazyData = {
       ...event,
       page: event.page + 1,
@@ -115,17 +131,6 @@ const CategoryTypeList = () => {
     await getProductCategory(defaultLazyData);
   };
 
-  const onGlobalFilterChange = (e) => {
-    const value = e.target.value;
-
-    console.log("value", value);
-    // let _filters = { ...filters };
-
-    // _filters['global'].value = value;
-
-    // setFilters(_filters);
-    setGlobalFilterValue(value);
-  };
   const onSort = async (event) => {
     setLoading(true);
     NProgress.start();
@@ -140,7 +145,6 @@ const CategoryTypeList = () => {
     await getProductCategory(defaultLazyData);
     NProgress.done();
     setLoading(false);
-    console.log("on sort", event);
   };
 
   const createHandler = () => {
@@ -281,7 +285,6 @@ const CategoryTypeList = () => {
         <IconField iconPosition="left">
           <InputIcon className="pi pi-search" />
           <InputText
-            value={globalFilterValue}
             onChange={onGlobalFilterChange}
             placeholder="Keyword Search"
           />
@@ -361,7 +364,6 @@ const CategoryTypeList = () => {
                   onSelectionChange={onSelectionChange}
                   // //select all
                   selectAll={selectAll}
-                  // onSelectAllChange={onSelectAllChange}
                 >
                   <Column
                     selectionMode="multiple"
