@@ -3,7 +3,12 @@ import ReactDOM from "react-dom/client";
 import reportWebVitals from "../reportWebVitals.js";
 
 //react router
-import { RouterProvider, useLoaderData, Navigate } from "react-router-dom";
+import {
+  RouterProvider,
+  useLoaderData,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 import router from "../routers/index.js";
 //react router
 
@@ -27,6 +32,7 @@ import { httpRequest } from "../services/CommonService.js";
 //helpers
 import { authHeaders } from "../helpers/AuthHelper.js";
 import { makeQueryStringUrl } from "../helpers/CommonHelper.js";
+
 import {
   BASE_URL,
   useLoginUrl,
@@ -44,7 +50,13 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 
+//jsPDF
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
 export {
+  jsPDF,
+  autoTable,
   IconField,
   InputIcon,
   InputText,
@@ -77,4 +89,5 @@ export {
   useLoginUrl,
   authUserUrl,
   makeQueryStringUrl,
+  useNavigate,
 };

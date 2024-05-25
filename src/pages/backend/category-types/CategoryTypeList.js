@@ -17,6 +17,11 @@ import {
   InputIcon,
   InputText,
   makeQueryStringUrl,
+  Button,
+  useNavigate,
+  NProgress,
+  jsPDF,
+  autoTable,
 } from "../../../helpers/global-files";
 
 let defaultLazyData = {
@@ -30,6 +35,8 @@ let defaultLazyData = {
 };
 
 const CategoryTypeList = () => {
+  //react router
+  const navigate = useNavigate();
   const [categoryTypes, setCategoryTypes] = useState([]);
   //datatable
   const [globalFilterValue, setGlobalFilterValue] = useState("");
@@ -39,6 +46,9 @@ const CategoryTypeList = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [selectedCategoryTypes, setSelectedCategoryTypes] = useState(null);
   const [lazyState, setlazyState] = useState({ ...defaultLazyData });
+
+  //jsPdf
+  const doc = new jsPDF();
 
   useEffect(() => {
     getProductCategory(defaultLazyData);
@@ -77,17 +87,7 @@ const CategoryTypeList = () => {
       });
   };
   //dataTable
-  // const onSelectAllChange = async (event) => {
-  //   const selectAll = event.checked;
 
-  //   if (selectAll) {
-  //     setSelectAll(true);
-  //     await getProductCategory(defaultLazyData);
-  //   } else {
-  //     setSelectAll(false);
-  //     setSelectedCategoryTypes([]);
-  //   }
-  // };
   const onSelectionChange = (event) => {
     const value = event.value;
     setSelectedCategoryTypes(value);
@@ -134,10 +134,79 @@ const CategoryTypeList = () => {
     // setFilters(_filters);
     setGlobalFilterValue(value);
   };
+
+  const createHandler = () => {
+    setLoading(true);
+    NProgress.start();
+    setTimeout(() => {
+      NProgress.done();
+      setLoading(false);
+      navigate("/admin/dashboard");
+    }, 1000);
+  };
+
+  const pdfGenerateHandler = () => {
+    setLoading(true);
+    NProgress.start();
+    setTimeout(() => {
+      if (categoryTypes.length > 0) {
+        NProgress.done();
+        setLoading(false);
+        autoTable(doc, {
+          head: [["No", "Name", "Status"]],
+          body: categoryTypes.map((category, key) => {
+            return [key + 1, category.name, category.status];
+          }),
+        });
+
+        doc.save("category-types.pdf");
+      }
+    }, 1000);
+  };
   const renderHeader = () => {
     return (
       <div className="d-flex justify-content-between">
-        <div></div>
+        <div>
+          <Button
+            label="Create"
+            icon="pi pi-plus"
+            rounded
+            loading={loading}
+            className="rounded-pill me-2"
+            onClick={createHandler}
+            size="small"
+          />
+          <Button
+            label="PDF"
+            icon="pi pi-file-pdf"
+            severity="success"
+            rounded
+            loading={loading}
+            className="rounded-pill me-2"
+            onClick={pdfGenerateHandler}
+            size="small"
+          />
+          <Button
+            label="Excel"
+            icon="pi pi-file-excel"
+            severity="warning"
+            rounded
+            loading={loading}
+            className="rounded-pill me-2"
+            onClick={createHandler}
+            size="small"
+          />
+          <Button
+            label="Reload"
+            icon="pi pi-refresh"
+            severity="help"
+            rounded
+            loading={loading}
+            className="rounded-pill me-2"
+            onClick={createHandler}
+            size="small"
+          />
+        </div>
         <IconField iconPosition="left">
           <InputIcon className="pi pi-search" />
           <InputText
