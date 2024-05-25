@@ -33,11 +33,11 @@ const CategoryTypeList = () => {
   const [categoryTypes, setCategoryTypes] = useState([]);
   //datatable
   const [globalFilterValue, setGlobalFilterValue] = useState("");
-  const [selectedCategoryTypes, setSelectedCategoryTypes] = useState(null);
+
   const [loading, setLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
-  // const [customers, setCustomers] = useState(null);
-  // const [selectAll, setSelectAll] = useState(false);
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedCategoryTypes, setSelectedCategoryTypes] = useState(null);
   const [lazyState, setlazyState] = useState({ ...defaultLazyData });
 
   useEffect(() => {
@@ -77,6 +77,23 @@ const CategoryTypeList = () => {
       });
   };
   //dataTable
+  // const onSelectAllChange = async (event) => {
+  //   const selectAll = event.checked;
+
+  //   if (selectAll) {
+  //     setSelectAll(true);
+  //     await getProductCategory(defaultLazyData);
+  //   } else {
+  //     setSelectAll(false);
+  //     setSelectedCategoryTypes([]);
+  //   }
+  // };
+  const onSelectionChange = (event) => {
+    const value = event.value;
+    setSelectedCategoryTypes(value);
+    setSelectAll(value.length === totalRecords);
+  };
+
   const imageBodyTemplate = (product) => {
     return (
       <img
@@ -201,7 +218,10 @@ const CategoryTypeList = () => {
                   //checkbox
                   selectionMode={null}
                   selection={selectedCategoryTypes}
-                  onSelectionChange={(e) => setSelectedCategoryTypes(e.value)}
+                  onSelectionChange={onSelectionChange}
+                  // //select all
+                  selectAll={selectAll}
+                  // onSelectAllChange={onSelectAllChange}
                 >
                   <Column
                     selectionMode="multiple"
