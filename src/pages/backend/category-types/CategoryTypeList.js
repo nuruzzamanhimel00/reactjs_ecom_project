@@ -22,11 +22,9 @@ import {
   NProgress,
   jsPDF,
   autoTable,
+  saveAs,
+  XLSX,
 } from "../../../helpers/global-files";
-
-//excel
-import { saveAs } from "file-saver";
-import * as XLSX from "xlsx";
 
 let defaultLazyData = {
   first: 0,
@@ -199,6 +197,27 @@ const CategoryTypeList = () => {
       }
     }, 1000);
   };
+
+  const reloadDatatableHandler = async () => {
+    setLoading(true);
+    NProgress.start();
+    defaultLazyData = {
+      first: 0,
+      rows: 10,
+      page: 1,
+      sortField: null,
+      sortOrder: null,
+      filters: ["name", "status"],
+      totalPages: 0,
+    };
+    await getProductCategory(defaultLazyData);
+    NProgress.done();
+    setLoading(false);
+  };
+
+  const deleteDataHandler = () => {
+    alert("deleteDataHandler");
+  };
   const renderHeader = () => {
     return (
       <div className="d-flex justify-content-between">
@@ -239,7 +258,17 @@ const CategoryTypeList = () => {
             rounded
             loading={loading}
             className="rounded-pill me-2"
-            onClick={createHandler}
+            onClick={reloadDatatableHandler}
+            size="small"
+          />
+          <Button
+            label="Delete"
+            icon="pi pi-trash"
+            severity="danger"
+            rounded
+            loading={loading}
+            className="rounded-pill me-2"
+            onClick={deleteDataHandler}
             size="small"
           />
         </div>

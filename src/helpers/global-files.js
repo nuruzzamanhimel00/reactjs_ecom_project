@@ -54,13 +54,13 @@ import { InputText } from "primereact/inputtext";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-// //excel
-// import { saveAs } from "file-saver";
-// import XLSX from "xlsx";
+//excel
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
 
 export {
-  // saveAs,
-  // XLSX,
+  saveAs,
+  XLSX,
   jsPDF,
   autoTable,
   IconField,
