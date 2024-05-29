@@ -39,6 +39,7 @@ import {
   useLoginUrl,
   authUserUrl,
   categoryTypeListUrl,
+  selectedCategoryTypeDltUrl,
 } from "../helpers/apiRoutes/index.js";
 
 //prime react
@@ -98,4 +99,5 @@ export {
   authUserUrl,
   makeQueryStringUrl,
   useNavigate,
+  selectedCategoryTypeDltUrl,
 };

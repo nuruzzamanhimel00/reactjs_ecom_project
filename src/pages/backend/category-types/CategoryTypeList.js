@@ -25,6 +25,7 @@ import {
   saveAs,
   XLSX,
   NavLink,
+  selectedCategoryTypeDltUrl,
 } from "../../../helpers/global-files";
 
 //sweetalert2
@@ -119,6 +120,68 @@ const CategoryTypeList = () => {
     const value = event.value;
     setSelectedCategoryTypes(value);
     setSelectAll(value.length === totalRecords);
+  };
+  const selectedItemDeleteHandler = async (e) => {
+    e.preventDefault();
+    if (selectedCategoryTypes && selectedCategoryTypes.length > 0) {
+      let delete_ids = selectedCategoryTypes.map((item) => item.id);
+
+      await MySwal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+        preConfirm: async () => {
+          NProgress.start();
+          setLoading(true);
+
+          await httpRequest({
+            url: selectedCategoryTypeDltUrl,
+            method: "POST",
+            headers: authHeaders(),
+            body: {
+              ids: delete_ids,
+            },
+          })
+            .then((response) => {
+              setLoading(false);
+              NProgress.done();
+
+              if (response && response.status) {
+                let selected_category_types = [...selectedCategoryTypes];
+                let category_types = [...categoryTypes];
+                //delete datas
+                selected_category_types.forEach((item) => {
+                  let findIndexOfData = category_types.findIndex(
+                    (data) => data.id === item.id
+                  );
+                  if (findIndexOfData > -1) {
+                    category_types.splice(findIndexOfData, 1);
+                  }
+                });
+                setCategoryTypes([...category_types]);
+
+                NProgress.done();
+                setLoading(false);
+                MySwal.fire({
+                  title: "Deleted!",
+                  text: "Your file has been deleted.",
+                  icon: "success",
+                });
+              }
+              console.log("response", response);
+              // console.log("loader result", response);
+            })
+            .catch((error) => {
+              setLoading(false);
+              return "";
+            });
+        },
+      });
+    }
   };
   const deleteDataHandler = (id) => {
     MySwal.fire({
@@ -336,6 +399,7 @@ const CategoryTypeList = () => {
             loading={loading}
             className="rounded-pill me-2"
             size="small"
+            onClick={selectedItemDeleteHandler}
           />
         </div>
         <IconField iconPosition="left">
