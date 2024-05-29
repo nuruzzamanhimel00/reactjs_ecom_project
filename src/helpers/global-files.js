@@ -8,6 +8,7 @@ import {
   useLoaderData,
   Navigate,
   useNavigate,
+  NavLink,
 } from "react-router-dom";
 import router from "../routers/index.js";
 //react router
@@ -59,6 +60,7 @@ import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 
 export {
+  NavLink,
   saveAs,
   XLSX,
   jsPDF,

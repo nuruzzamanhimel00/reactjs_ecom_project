@@ -24,7 +24,13 @@ import {
   autoTable,
   saveAs,
   XLSX,
+  NavLink,
 } from "../../../helpers/global-files";
+
+//sweetalert2
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+const MySwal = withReactContent(Swal);
 
 let defaultLazyData = {
   first: 0,
@@ -96,6 +102,8 @@ const CategoryTypeList = () => {
           setlazyState((prevData) => {
             return { ...prevData, ...defaultLazyData };
           });
+        } else {
+          setCategoryTypes([]);
         }
         console.log("response", response);
         // console.log("loader result", response);
@@ -111,6 +119,58 @@ const CategoryTypeList = () => {
     const value = event.value;
     setSelectedCategoryTypes(value);
     setSelectAll(value.length === totalRecords);
+  };
+  const deleteDataHandler = (id) => {
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      preConfirm: async () => {
+        NProgress.start();
+        setLoading(true);
+
+        await httpRequest({
+          url: categoryTypeListUrl + "/" + id,
+          method: "DELETE",
+          headers: authHeaders(),
+        })
+          .then((response) => {
+            setLoading(false);
+            NProgress.done();
+
+            if (response && response.status) {
+              let category_types_data = [...categoryTypes];
+
+              let findIndexOfData = category_types_data.findIndex(
+                (item) => item.id === id
+              );
+
+              if (findIndexOfData > -1) {
+                category_types_data.splice(findIndexOfData, 1);
+                setCategoryTypes([...category_types_data]);
+              }
+              NProgress.done();
+              setLoading(false);
+              MySwal.fire({
+                title: "Deleted!",
+                text: "Your file has been deleted.",
+                icon: "success",
+              });
+            }
+            console.log("response", response);
+            // console.log("loader result", response);
+          })
+          .catch((error) => {
+            setLoading(false);
+            return "";
+          });
+      },
+    });
+    // alert("deleteDataHandler");
   };
 
   const imageBodyTemplate = (product) => {
@@ -225,9 +285,6 @@ const CategoryTypeList = () => {
     setLoading(false);
   };
 
-  const deleteDataHandler = () => {
-    alert("deleteDataHandler");
-  };
   const renderHeader = () => {
     return (
       <div className="d-flex justify-content-between">
@@ -278,7 +335,6 @@ const CategoryTypeList = () => {
             rounded
             loading={loading}
             className="rounded-pill me-2"
-            onClick={deleteDataHandler}
             size="small"
           />
         </div>
@@ -299,6 +355,31 @@ const CategoryTypeList = () => {
   } category types.`;
   const statusBodyTemplate = (data) => {
     return <Tag value={data.status} severity={getSeverity(data)}></Tag>;
+  };
+
+  const actionBodyTemplate = (data) => {
+    return (
+      <>
+        <Button
+          icon="pi pi-eye"
+          className="p-button-rounded p-button-info me-2 btn-sm"
+          size="sm"
+          onClick={() => navigate("/admin/dashboard")}
+        />
+        <Button
+          icon="pi pi-pencil"
+          className="p-button-rounded p-button-success me-2 btn-sm"
+          size="sm"
+          onClick={() => navigate("/admin/dashboard")}
+        />
+        <Button
+          icon="pi pi-trash"
+          className="p-button-rounded p-button-danger  me-2 btn-sm"
+          size="sm"
+          onClick={() => deleteDataHandler(data.id)}
+        />
+      </>
+    );
   };
 
   const getSeverity = (data) => {
@@ -322,11 +403,11 @@ const CategoryTypeList = () => {
             <Card>
               <Card.Body>
                 <Breadcrumb>
-                  <Breadcrumb.Item href="#">Home</Breadcrumb.Item>
-                  <Breadcrumb.Item href="https://getbootstrap.com/docs/4.0/components/breadcrumb/">
-                    Library
+                  <Breadcrumb.Item href="#">
+                    <NavLink to="/admin/dashboard">Dashboard </NavLink>
                   </Breadcrumb.Item>
-                  <Breadcrumb.Item active>Data</Breadcrumb.Item>
+
+                  <Breadcrumb.Item active>Category Type</Breadcrumb.Item>
                 </Breadcrumb>
               </Card.Body>
             </Card>
@@ -383,52 +464,12 @@ const CategoryTypeList = () => {
                     body={statusBodyTemplate}
                     sortable
                   ></Column>
+                  <Column
+                    header="Actions"
+                    body={actionBodyTemplate}
+                    sortable
+                  ></Column>
                 </DataTable>
-                {/* <DataTable
-                  value={categoryTypes}
-                  header={header}
-                  footer={footer}
-                  tableStyle={{ minWidth: "50rem" }}
-                  showGridlines
-                  stripedRows
-                  dataKey="id"
-                  emptyMessage="Data not found!!"
-                  //checkbox
-                  selectionMode={null}
-                  selection={selectedCategoryTypes}
-                  onSelectionChange={(e) => setSelectedCategoryTypes(e.value)}
-                  //lazy loading
-                  paginator
-                  first={defaultLazyData.first}
-                  rows={10}
-                  totalRecords={totalRecords}
-                  onPage={onPage}
-                  loading={loading}
-                  lazy
-                  //sort
-                  onSort={onSort}
-                  sortField={defaultLazyData.sortField}
-                  sortOrder={defaultLazyData.sortOrder}
-                >
-              
-                  <Column
-                    selectionMode="multiple"
-                    headerStyle={{ width: "3rem" }}
-                  ></Column>
-                  <Column
-                    field="image"
-                    header="Image"
-                    body={imageBodyTemplate}
-                  ></Column>
-
-                  <Column field="name" header="Name" sortable></Column>
-
-                  <Column
-                    field="status"
-                    header="Status"
-                    body={statusBodyTemplate}
-                  ></Column>
-                </DataTable> */}
               </Card.Body>
             </Card>
           </Col>
