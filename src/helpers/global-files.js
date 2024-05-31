@@ -71,7 +71,13 @@ import * as XLSX from "xlsx";
 //uuid
 import { v4 as uuidv4 } from "uuid";
 
+//sweetalert2
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+const MySwal = withReactContent(Swal);
+
 export {
+  MySwal,
   Image,
   uuidv4,
   Modal,

@@ -29,15 +29,11 @@ import {
   Form,
   uuidv4,
   Image,
+  MySwal,
 } from "../../../helpers/global-files";
 
 //modal
 import BootstrapModal from "../../../components/admin/UI/BootstrapModal.js";
-
-//sweetalert2
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
-const MySwal = withReactContent(Swal);
 
 let defaultLazyData = {
   first: 0,
@@ -77,6 +73,7 @@ const CategoryTypeList = () => {
   //input file
   const [inputData, setInputData] = useState({
     name: "",
+    status: "",
     file: "",
   });
 
@@ -526,6 +523,17 @@ const CategoryTypeList = () => {
     reader.readAsDataURL(file);
   };
 
+  const inputHandler = (event) => {
+    const { name, value } = event.target;
+    setInputData((prevData) => {
+      return {
+        ...prevData,
+        [name]: value,
+      };
+    });
+    console.log(name, value);
+  };
+
   return (
     <div>
       <BootstrapModal show={show} handleClose={handleClose} {...modalConfig}>
@@ -541,25 +549,17 @@ const CategoryTypeList = () => {
                           className="mb-3"
                           controlId="exampleForm.ControlInput1"
                         >
-                          <Form.Label>Email address</Form.Label>
+                          <Form.Label>Name</Form.Label>
                           <Form.Control
-                            type="email"
-                            placeholder="name@example.com"
+                            type="text"
+                            placeholder="Category Type name"
+                            name="name"
+                            onChange={inputHandler}
+                            value={inputData.name}
                           />
                         </Form.Group>
                       </Col>
-                      <Col md={6}>
-                        <Form.Group
-                          className="mb-3"
-                          controlId="exampleForm.ControlInput1"
-                        >
-                          <Form.Label>Email address</Form.Label>
-                          <Form.Control
-                            type="email"
-                            placeholder="name@example.com"
-                          />
-                        </Form.Group>
-                      </Col>
+
                       <Col md={6}>
                         <Form.Group
                           className="mb-3"
@@ -573,12 +573,18 @@ const CategoryTypeList = () => {
                               name="status"
                               id={`default-Active`}
                               label={` Active`}
+                              onChange={inputHandler}
+                              checked={inputData.status === "active"}
+                              value="active"
                             />
                             <Form.Check // prettier-ignore
                               type="radio"
                               id={`default-Inactive`}
                               name="status"
                               label={` Inactive`}
+                              onChange={inputHandler}
+                              checked={inputData.status === "inactive"}
+                              value="inactive"
                             />
                           </div>
                         </Form.Group>
