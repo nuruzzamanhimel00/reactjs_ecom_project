@@ -1,5 +1,5 @@
 export function httpRequest(requestConfig) {
-  //   console.log("requestConfig", requestConfig);
+  
   return new Promise(async (resolve, reject) => {
     return await fetch(requestConfig.url, {
       method: requestConfig.method ? requestConfig.method : "GET",

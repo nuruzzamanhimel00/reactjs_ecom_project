@@ -19,7 +19,7 @@ const SideBar = () => {
         {
           label: "Category Types",
           icon: "pi pi-clone",
-          to: "/admin/category-type-list",
+          to: "/admin/category-type/list",
         },
       ],
     },

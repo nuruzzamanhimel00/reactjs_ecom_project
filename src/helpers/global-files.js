@@ -9,9 +9,10 @@ import {
   Navigate,
   useNavigate,
   NavLink,
+  Outlet,
 } from "react-router-dom";
 import router from "../routers/index.js";
-//react router
+//react router end
 
 //redux toolkit
 import { store } from "../store/index.js";
@@ -26,13 +27,18 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Breadcrumb from "react-bootstrap/Breadcrumb";
+import Form from "react-bootstrap/Form";
+import Modal from "react-bootstrap/Modal";
 
 //services
 import { httpRequest } from "../services/CommonService.js";
 
 //helpers
 import { authHeaders } from "../helpers/AuthHelper.js";
-import { makeQueryStringUrl } from "../helpers/CommonHelper.js";
+import {
+  makeQueryStringUrl,
+  nagigateComponent,
+} from "../helpers/CommonHelper.js";
 
 import {
   BASE_URL,
@@ -51,6 +57,8 @@ import { Tag } from "primereact/tag";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
+import { FileUpload } from "primereact/fileupload";
+import { Image } from "primereact/image";
 
 //jsPDF
 import jsPDF from "jspdf";
@@ -60,7 +68,17 @@ import autoTable from "jspdf-autotable";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 
+//uuid
+import { v4 as uuidv4 } from "uuid";
+
 export {
+  Image,
+  uuidv4,
+  Modal,
+  FileUpload,
+  nagigateComponent,
+  Form,
+  Outlet,
   NavLink,
   saveAs,
   XLSX,
