@@ -111,8 +111,29 @@ const CategoryTypeList = () => {
     },
     // enableReinitialize: true, //This ensures Formik will reinitialize with new initial values
     validate,
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+    onSubmit: async (values, { resetForm }) => {
+      NProgress.start();
+      // alert(JSON.stringify(values, null, 2));
+      await httpRequest({
+        url: categoryTypeListUrl,
+        method: "POST",
+        headers: authHeaders(),
+        body: values,
+      })
+        .then((response) => {
+          NProgress.done();
+          // // Reset the form to initial values
+          resetForm();
+          if (response && response.status) {
+            setShow(false);
+            alert(response.message);
+          }
+          // console.log("response", response);
+        })
+        .catch((error) => {
+          setLoading(false);
+          return "";
+        });
     },
   });
 
