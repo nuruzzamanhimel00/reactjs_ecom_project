@@ -16,7 +16,7 @@ import router from "../routers/index.js";
 
 //redux toolkit
 import { store } from "../store/index.js";
-import { Provider } from "react-redux";
+import { Provider, useSelector, useDispatch } from "react-redux";
 
 //nprogress
 import NProgress from "nprogress";
@@ -77,6 +77,8 @@ import withReactContent from "sweetalert2-react-content";
 const MySwal = withReactContent(Swal);
 
 export {
+  useSelector,
+  useDispatch,
   MySwal,
   Image,
   uuidv4,

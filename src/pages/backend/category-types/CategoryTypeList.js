@@ -30,12 +30,18 @@ import {
   uuidv4,
   Image,
   MySwal,
+  useDispatch,
 } from "../../../helpers/global-files";
 
 //modal
 import BootstrapModal from "../../../components/admin/UI/BootstrapModal.js";
 
 import { useFormik } from "formik";
+
+import ToastNotification from "../../../components/ToastNotification.js";
+
+//redux slice
+import { authActions } from "../../../store/toast-slice.js";
 
 let defaultLazyData = {
   first: 0,
@@ -72,6 +78,8 @@ const validate = (values) => {
 };
 
 const CategoryTypeList = () => {
+  //redux
+  const dispatch = useDispatch();
   //react router
   const navigate = useNavigate();
   const [categoryTypes, setCategoryTypes] = useState([]);
@@ -94,13 +102,6 @@ const CategoryTypeList = () => {
     size: "lg",
   });
 
-  //input file
-  // const [inputData, setInputData] = useState({
-  //   name: "",
-  //   status: "active",
-  //   file: "",
-  // });
-
   //formik
 
   const formik = useFormik({
@@ -109,7 +110,7 @@ const CategoryTypeList = () => {
       status: "active",
       file: "",
     },
-    // enableReinitialize: true, //This ensures Formik will reinitialize with new initial values
+
     validate,
     onSubmit: async (values, { resetForm }) => {
       NProgress.start();
@@ -126,7 +127,16 @@ const CategoryTypeList = () => {
           resetForm();
           if (response && response.status) {
             setShow(false);
-            alert(response.message);
+            reloadDatatableHandler();
+            dispatch(
+              authActions.addToast({
+                id: new Date().getTime(),
+                severity: "success",
+                summary: "Success Message",
+                detail: response.message,
+                life: 3000,
+              })
+            );
           }
           // console.log("response", response);
         })
@@ -408,8 +418,8 @@ const CategoryTypeList = () => {
       first: 0,
       rows: 10,
       page: 1,
-      sortField: null,
-      sortOrder: null,
+      sortField: "",
+      sortOrder: "",
       filters: ["name", "status"],
       totalPages: 0,
     };
@@ -579,6 +589,8 @@ const CategoryTypeList = () => {
 
   return (
     <div>
+      {/* Toaster Prime React  */}
+      <ToastNotification />
       <BootstrapModal show={show} onHide={handleClose} {...modalConfig}>
         <form onSubmit={formik.handleSubmit}>
           <Row>
