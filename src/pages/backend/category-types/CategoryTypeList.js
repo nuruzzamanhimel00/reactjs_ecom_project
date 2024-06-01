@@ -58,6 +58,12 @@ const validate = (values) => {
     errors.name = "Must be 15 characters or less";
   }
 
+  if (!values.file.path) {
+    errors.file = "Required";
+  } else if (!/^data:image\/(png|jpg|jpeg);base64,/.test(values.file.path)) {
+    errors.file = "Invalid image format. Only PNG, JPG, and JPEG are accepted.";
+  }
+
   if (!values.status) {
     errors.status = "Required";
   }
@@ -518,11 +524,6 @@ const CategoryTypeList = () => {
     setShow(false);
   };
 
-  const deleteFileHandler = (event) => {
-    event.preventDefault();
-    formik.setFieldValue("file", ""); // Reset the email field
-  };
-
   const fileChangeHandler = (event) => {
     let fomikData = { ...formik.values };
 
@@ -544,9 +545,15 @@ const CategoryTypeList = () => {
         name: file.name,
         path: event.target.result,
       };
+
       formik.setValues({ ...fomikData });
     };
     reader.readAsDataURL(file);
+  };
+
+  const deleteFileHandler = (event) => {
+    event.preventDefault();
+    formik.setFieldValue("file", ""); // Reset the email field
   };
 
   return (
@@ -628,8 +635,10 @@ const CategoryTypeList = () => {
                           id="formFile"
                           type="file"
                           accept="image/*"
-                          name="image"
+                          name="file"
                           onChange={fileChangeHandler}
+                          // onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
                         />
                       </Form.Group>
                       {formik.values.file !== "" && (
@@ -668,9 +677,6 @@ const CategoryTypeList = () => {
                             )}
 
                             <div>
-                              <button className="btn btn-primary btn-sm me-2">
-                                View
-                              </button>
                               <button
                                 className="btn btn-danger btn-sm"
                                 onClick={deleteFileHandler}
@@ -681,6 +687,9 @@ const CategoryTypeList = () => {
                           </div>
                         </div>
                       )}
+                      {formik.errors.file ? (
+                        <div className="text-danger">{formik.errors.file}</div>
+                      ) : null}
                     </Col>
                   </Row>
                   <Button label="Submit" type="submit" />
