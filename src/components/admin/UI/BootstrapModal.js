@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 
 const ModalOverlay = (props) => {
   return (
-    <Modal {...props} onHide={props.handleClose}>
+    <Modal {...props}>
       {props.header && (
         <Modal.Header closeButton>
           <Modal.Title>{props.header}</Modal.Title>
@@ -14,7 +14,7 @@ const ModalOverlay = (props) => {
       {props.footer && (
         <Modal.Footer>
           {props.footer.cancle_btn && (
-            <Button variant="secondary" onClick={props.handleClose}>
+            <Button variant="secondary" onClick={props.onHide}>
               {props.footer.cancle_btn}
             </Button>
           )}
