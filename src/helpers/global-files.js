@@ -44,7 +44,7 @@ import {
   BASE_URL,
   useLoginUrl,
   authUserUrl,
-  categoryTypeListUrl,
+  categoryTypeUrl,
   selectedCategoryTypeDltUrl,
 } from "../helpers/apiRoutes/index.js";
 
@@ -76,7 +76,10 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 const MySwal = withReactContent(Swal);
 
+
+
 export {
+
   useSelector,
   useDispatch,
   MySwal,
@@ -115,7 +118,7 @@ export {
   useState,
   authHeaders,
   httpRequest,
-  categoryTypeListUrl,
+  categoryTypeUrl,
   Button,
   Tag,
   useLoaderData,

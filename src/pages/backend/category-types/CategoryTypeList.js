@@ -8,7 +8,7 @@ import {
   useEffect,
   authHeaders,
   httpRequest,
-  categoryTypeListUrl,
+  categoryTypeUrl,
   useState,
   DataTable,
   Column,
@@ -31,8 +31,11 @@ import {
   Image,
   MySwal,
   useDispatch,
+
 } from "../../../helpers/global-files";
 
+//default image
+import defaultImage from "../../../assets/images/default.png";
 //modal
 import BootstrapModal from "../../../components/admin/UI/BootstrapModal.js";
 
@@ -66,11 +69,12 @@ const validate = (values) => {
 
   if (!values.file.path) {
     errors.file = "Required";
-  } else if (!/^data:image\/(png|jpg|jpeg);base64,/.test(values.file.path)) {
-    errors.file = "Invalid image format. Only PNG, JPG, and JPEG are accepted.";
   }
 
   if (!values.status) {
+    errors.status = "Required";
+  }
+  if (!values._method) {
     errors.status = "Required";
   }
 
@@ -100,6 +104,7 @@ const CategoryTypeList = () => {
     header: "",
     backdrop: "static",
     size: "lg",
+    _method: "create",
   });
 
   //formik
@@ -109,15 +114,17 @@ const CategoryTypeList = () => {
       name: "",
       status: "active",
       file: "",
+      id: "",
+      _method:'',
     },
 
     validate,
     onSubmit: async (values, { resetForm }) => {
       NProgress.start();
-      // alert(JSON.stringify(values, null, 2));
+
       await httpRequest({
-        url: categoryTypeListUrl,
-        method: "POST",
+        url: values._method === 'create' ? categoryTypeUrl:categoryTypeUrl+"/"+values.id,
+        method: values._method === 'create' ? "POST" : "PUT",
         headers: authHeaders(),
         body: values,
       })
@@ -171,7 +178,7 @@ const CategoryTypeList = () => {
   };
 
   const getProductCategory = async (data) => {
-    let url = makeQueryStringUrl(categoryTypeListUrl, data);
+    let url = makeQueryStringUrl(categoryTypeUrl, data);
     setLoading(true);
     await httpRequest({
       url: url,
@@ -287,7 +294,7 @@ const CategoryTypeList = () => {
         setLoading(true);
 
         await httpRequest({
-          url: categoryTypeListUrl + "/" + id,
+          url: categoryTypeUrl + "/" + id,
           method: "DELETE",
           headers: authHeaders(),
         })
@@ -326,11 +333,13 @@ const CategoryTypeList = () => {
     // alert("deleteDataHandler");
   };
 
-  const imageBodyTemplate = (product) => {
+  const imageBodyTemplate = (data) => {
     return (
       <img
-        src={`https://primefaces.org/cdn/primereact/images/product/${product.image}`}
-        alt={product.image}
+        src={`${data.file !== null ? data.file.path : defaultImage}`}
+      
+        alt={`${data.file !== null ? data.file.name: ""}`}
+      
         className=" shadow-2 border-round"
         style={{ width: "5rem" }}
       />
@@ -428,15 +437,51 @@ const CategoryTypeList = () => {
     setLoading(false);
   };
 
+  //edit data
+  const editHandler = async (id) =>{
+
+    setLoading(true);
+    await httpRequest({
+      url: categoryTypeUrl+"/"+id,
+      method: "GET",
+      headers: authHeaders(),
+    })
+      .then((response) => {
+        setLoading(false);
+        if (response !== null) {
+          formik.setValues({ ...response,file:response.file !== null ? response.file: null,_method:'edit',id:id });
+      
+          setModalConfig((prevData) => {
+            return {
+              ...prevData,
+              header: "Edit Category Type",
+              type: "edit",
+            };
+          });
+          setShow(true);
+        }
+      
+        // console.log("response", response);
+    
+      })
+      .catch((error) => {
+        setLoading(false);
+        return "";
+      });
+  }
+
   //category type create
   const createHandler = () => {
     setModalConfig((prevData) => {
       return {
         ...prevData,
         header: "Create Category Type",
+        type:'create'
       };
     });
     setShow(true);
+    formik.setFieldValue("_method", "create");
+    formik.setFieldValue("id", "");
   };
 
   const renderHeader = () => {
@@ -525,7 +570,7 @@ const CategoryTypeList = () => {
           icon="pi pi-pencil"
           className="p-button-rounded p-button-success me-2 btn-sm"
           size="sm"
-          onClick={() => navigate("/admin/dashboard")}
+          onClick={() =>editHandler (data.id)}
         />
         <Button
           icon="pi pi-trash"
@@ -593,6 +638,7 @@ const CategoryTypeList = () => {
       <ToastNotification />
       <BootstrapModal show={show} onHide={handleClose} {...modalConfig}>
         <form onSubmit={formik.handleSubmit}>
+        
           <Row>
             <Col md={12}>
               <Card>
