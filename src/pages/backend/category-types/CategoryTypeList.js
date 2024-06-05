@@ -85,7 +85,7 @@ const CategoryTypeList = () => {
   //redux
   const dispatch = useDispatch();
   //react router
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [categoryTypes, setCategoryTypes] = useState([]);
   //datatable
 
@@ -436,11 +436,10 @@ const CategoryTypeList = () => {
     NProgress.done();
     setLoading(false);
   };
-
-  //edit data
-  const editHandler = async (id) =>{
-
+  //view data
+  const viewHandler = async (id) => {
     setLoading(true);
+    NProgress.start();
     await httpRequest({
       url: categoryTypeUrl+"/"+id,
       method: "GET",
@@ -448,6 +447,41 @@ const CategoryTypeList = () => {
     })
       .then((response) => {
         setLoading(false);
+        NProgress.done();
+        if (response !== null) {
+          formik.setValues({ ...response,file:response.file !== null ? response.file: null,_method:'edit',id:id });
+      
+          setModalConfig((prevData) => {
+            return {
+              ...prevData,
+              header: "view Category Type",
+              type: "view",
+            };
+          });
+          setShow(true);
+        }
+      
+        // console.log("response", response);
+    
+      })
+      .catch((error) => {
+        setLoading(false);
+        return "";
+      });
+  }
+  //edit data
+  const editHandler = async (id) =>{
+
+    setLoading(true);
+    NProgress.start();
+    await httpRequest({
+      url: categoryTypeUrl+"/"+id,
+      method: "GET",
+      headers: authHeaders(),
+    })
+      .then((response) => {
+        setLoading(false);
+        NProgress.done();
         if (response !== null) {
           formik.setValues({ ...response,file:response.file !== null ? response.file: null,_method:'edit',id:id });
       
@@ -564,7 +598,7 @@ const CategoryTypeList = () => {
           icon="pi pi-eye"
           className="p-button-rounded p-button-info me-2 btn-sm"
           size="sm"
-          onClick={() => navigate("/admin/dashboard")}
+          onClick={() => viewHandler(data.id)}
         />
         <Button
           icon="pi pi-pencil"
@@ -649,7 +683,7 @@ const CategoryTypeList = () => {
                         className="mb-3"
                         controlId="exampleForm.ControlInput1"
                       >
-                        <Form.Label>Name</Form.Label>
+                        <Form.Label>Name ({modalConfig.type})</Form.Label>
 
                         <Form.Control
                           name="name"
@@ -657,6 +691,7 @@ const CategoryTypeList = () => {
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
                           value={formik.values.name}
+                          readonly={modalConfig.type === "view"? true : false}
                         />
 
                         {formik.errors.name && formik.touched.name ? (
