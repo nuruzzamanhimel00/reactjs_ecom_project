@@ -18,7 +18,7 @@ import {
   InputText,
   makeQueryStringUrl,
   Button,
-  useNavigate,
+  // useNavigate,
   NProgress,
   jsPDF,
   autoTable,
@@ -85,7 +85,7 @@ const CategoryTypeList = () => {
   //redux
   const dispatch = useDispatch();
   //react router
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [categoryTypes, setCategoryTypes] = useState([]);
   //datatable
 
@@ -436,7 +436,37 @@ const CategoryTypeList = () => {
     NProgress.done();
     setLoading(false);
   };
-
+  //view data 
+  const viewHandler = async (id) =>{
+    setLoading(true);
+    await httpRequest({
+      url: categoryTypeUrl+"/"+id,
+      method: "GET",
+      headers: authHeaders(),
+    })
+      .then((response) => {
+        setLoading(false);
+        if (response !== null) {
+          formik.setValues({ ...response,file:response.file !== null ? response.file: null,_method:'view',id:id });
+      
+          setModalConfig((prevData) => {
+            return {
+              ...prevData,
+              header: "View Category Type",
+              type: "view",
+            };
+          });
+          setShow(true);
+        }
+      
+        // console.log("response", response);
+    
+      })
+      .catch((error) => {
+        setLoading(false);
+        return "";
+      });
+  }
   //edit data
   const editHandler = async (id) =>{
 
@@ -564,7 +594,7 @@ const CategoryTypeList = () => {
           icon="pi pi-eye"
           className="p-button-rounded p-button-info me-2 btn-sm"
           size="sm"
-          onClick={() => navigate("/admin/dashboard")}
+          onClick={() => viewHandler (data.id)}
         />
         <Button
           icon="pi pi-pencil"
@@ -657,6 +687,8 @@ const CategoryTypeList = () => {
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
                           value={formik.values.name}
+                          disabled ={modalConfig.type === 'view' ? true : false }
+                          
                         />
 
                         {formik.errors.name && formik.touched.name ? (
@@ -685,6 +717,7 @@ const CategoryTypeList = () => {
                             onBlur={formik.handleBlur}
                             checked={formik.values.status === "active"}
                             value="active"
+                            disabled ={modalConfig.type === 'view' ? true : false }
                           />
                           <Form.Check // prettier-ignore
                             type="radio"
@@ -695,6 +728,7 @@ const CategoryTypeList = () => {
                             onBlur={formik.handleBlur}
                             checked={formik.values.status === "inactive"}
                             value="inactive"
+                            disabled ={modalConfig.type === 'view' ? true : false }
                           />
                         </div>
                         {formik.errors.status && formik.touched.status ? (
@@ -710,7 +744,9 @@ const CategoryTypeList = () => {
                         className="mb-3 d-flex flex-column"
                       >
                         <Form.Label>Images</Form.Label>
-                        <input
+                        {
+                          modalConfig.type !== 'view' && 
+                          <input
                           id="formFile"
                           type="file"
                           accept="image/*"
@@ -719,6 +755,8 @@ const CategoryTypeList = () => {
                           // onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
                         />
+                        }
+                      
                       </Form.Group>
                       {formik.values.file !== "" && (
                         <div className="multile_image">
@@ -754,8 +792,9 @@ const CategoryTypeList = () => {
                                 <p>File name.jpg</p>
                               </div>
                             )}
-
-                            <div>
+                            {
+                              modalConfig.type !== 'view' && 
+                              <div>
                               <button
                                 className="btn btn-danger btn-sm"
                                 onClick={deleteFileHandler}
@@ -763,6 +802,8 @@ const CategoryTypeList = () => {
                                 Delete
                               </button>
                             </div>
+                            }
+                          
                           </div>
                         </div>
                       )}
@@ -771,7 +812,11 @@ const CategoryTypeList = () => {
                       ) : null}
                     </Col>
                   </Row>
-                  <Button label="Submit" type="submit" />
+                  {
+                    modalConfig.type !== 'view' && 
+                    <Button label="Submit" type="submit" />
+                  }
+                
                 </Card.Body>
               </Card>
             </Col>
