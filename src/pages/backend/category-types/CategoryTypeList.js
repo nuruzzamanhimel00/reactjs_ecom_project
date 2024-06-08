@@ -471,6 +471,7 @@ const CategoryTypeList = () => {
   const editHandler = async (id) =>{
 
     setLoading(true);
+    NProgress.start();
     await httpRequest({
       url: categoryTypeUrl+"/"+id,
       method: "GET",
@@ -478,14 +479,15 @@ const CategoryTypeList = () => {
     })
       .then((response) => {
         setLoading(false);
+        NProgress.done();
         if (response !== null) {
           formik.setValues({ ...response,file:response.file !== null ? response.file: null,_method:'edit',id:id });
       
           setModalConfig((prevData) => {
             return {
               ...prevData,
-              header: "Edit Category Type",
-              type: "edit",
+              header: "view Category Type",
+              type: "view",
             };
           });
           setShow(true);
@@ -499,6 +501,7 @@ const CategoryTypeList = () => {
         return "";
       });
   }
+
 
   //category type create
   const createHandler = () => {
@@ -679,7 +682,7 @@ const CategoryTypeList = () => {
                         className="mb-3"
                         controlId="exampleForm.ControlInput1"
                       >
-                        <Form.Label>Name</Form.Label>
+                        <Form.Label>Name ({modalConfig.type})</Form.Label>
 
                         <Form.Control
                           name="name"
