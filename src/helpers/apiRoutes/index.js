@@ -6,3 +6,6 @@ export const authUserUrl = BASE_URL + "/api/user";
 export const categoryTypeUrl = BASE_URL + "/api/category-type";
 export const selectedCategoryTypeDltUrl =
   BASE_URL + "/api/selected/category-type-delete";
+//category
+  
+export const categoryUrl = BASE_URL + "/api/categories";

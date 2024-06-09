@@ -63,18 +63,18 @@ const validate = (values) => {
   const errors = {};
   if (!values.name) {
     errors.name = "Required";
-  } else if (values.name.length > 15) {
-    errors.name = "Must be 15 characters or less";
+  } else if (values.name.length > 100) {
+    errors.name = "Must be 100 characters or less";
   }
 
-  if (values.file !== null &&!values.file.path) {
+  if (values.file === null ) {
     errors.file = "Required";
   }
 
   if (!values.status) {
     errors.status = "Required";
   }
-  if (!values._method) {
+  if (!values.method_type) {
     errors.status = "Required";
   }
 
@@ -104,7 +104,7 @@ const CategoryTypeList = () => {
     header: "",
     backdrop: "static",
     size: "lg",
-    _method: "create",
+    method_type: "create",
   });
 
   //formik
@@ -115,7 +115,7 @@ const CategoryTypeList = () => {
       status: "active",
       file: "",
       id: "",
-      _method:'',
+      method_type:'',
     },
 
     validate,
@@ -123,8 +123,8 @@ const CategoryTypeList = () => {
       NProgress.start();
 
       await httpRequest({
-        url: values._method === 'create' ? categoryTypeUrl:categoryTypeUrl+"/"+values.id,
-        method: values._method === 'create' ? "POST" : "PUT",
+        url: values.method_type === 'create' ? categoryTypeUrl : categoryTypeUrl+"/"+values.id,
+        method: values.method_type === 'create' ? "POST" : "PUT",
         headers: authHeaders(),
         body: values,
       })
@@ -447,7 +447,7 @@ const CategoryTypeList = () => {
       .then((response) => {
         setLoading(false);
         if (response !== null) {
-          formik.setValues({ ...response,file:response.file !== null ? response.file: null,_method:'view',id:id });
+          formik.setValues({ ...response,file:response.file !== null ? response.file: null,method_type:'view',id:id });
       
           setModalConfig((prevData) => {
             return {
@@ -481,7 +481,7 @@ const CategoryTypeList = () => {
         setLoading(false);
         NProgress.done();
         if (response !== null) {
-          formik.setValues({ ...response,file:response.file !== null ? response.file: null,_method:'edit',id:id });
+          formik.setValues({ ...response,file:response.file !== null ? response.file: null,method_type:'edit',id:id });
       
           setModalConfig((prevData) => {
             return {
@@ -513,9 +513,22 @@ const CategoryTypeList = () => {
       };
     });
     setShow(true);
-    formik.setFieldValue("_method", "create");
+    //reset formik
+    resetFormikData();
+    formik.setFieldValue("method_type", "create");
     formik.setFieldValue("id", "");
   };
+
+  const resetFormikData = () => {
+    let resetData = {
+      name: "",
+      status: "active",
+      file: null,
+      id: "",
+      method_type:'',
+    }
+    formik.setValues(resetData);
+  }
 
   const renderHeader = () => {
     return (
