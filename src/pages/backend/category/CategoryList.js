@@ -19,8 +19,9 @@ import {
   InputIcon,
   IconField,
   NProgress,
-    Column,
-    Tag,
+  Column,
+  Tag,
+  MySwal,
 } from "../../../helpers/global-files.js";
 //default image
 import defaultImage from "../../../assets/images/default.png";
@@ -35,8 +36,7 @@ let defaultLazyData = {
   totalPages: 0,
 };
 
-let searchColumn = ''
-
+let searchColumn = "";
 
 const CategoryList = () => {
   const [loading, setLoading] = useState(false);
@@ -83,22 +83,83 @@ const CategoryList = () => {
         setLoading(false);
         return "";
       });
-    };
-    const onGlobalFilterChange = async (e) => {
-        clearTimeout(searchColumn);
-        const value = e.target.value;
-        searchColumn = setTimeout(async () => {
-          setLoading(true);
-          NProgress.start();
-          defaultLazyData = {
-            ...defaultLazyData,
-            search: value,
-          };
-          await getAllData(defaultLazyData);
-          NProgress.done();
-          setLoading(false);
-        }, 1000);
+  };
+  const onGlobalFilterChange = async (e) => {
+    clearTimeout(searchColumn);
+    const value = e.target.value;
+    searchColumn = setTimeout(async () => {
+      setLoading(true);
+      NProgress.start();
+      defaultLazyData = {
+        ...defaultLazyData,
+        search: value,
       };
+      await getAllData(defaultLazyData);
+      NProgress.done();
+      setLoading(false);
+    }, 1000);
+  };
+
+  const deleteDataHandler = (id) => {
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      preConfirm: async () => {
+        NProgress.start();
+        setLoading(true);
+
+        await httpRequest({
+          url: categoryUrl + "/" + id,
+          method: "DELETE",
+          headers: authHeaders(),
+        })
+          .then((response) => {
+            setLoading(false);
+            NProgress.done();
+
+            if (response && response.status) {
+              reloadDatatableHandler();
+              NProgress.done();
+              setLoading(false);
+              MySwal.fire({
+                title: "Deleted!",
+                text: "Your file has been deleted.",
+                icon: "success",
+              });
+            }
+            // console.log("response", response);
+            // console.log("loader result", response);
+          })
+          .catch((error) => {
+            setLoading(false);
+            return "";
+          });
+      },
+    });
+    // alert("deleteDataHandler");
+  };
+
+  const reloadDatatableHandler = async () => {
+    setLoading(true);
+    NProgress.start();
+    defaultLazyData = {
+      first: 0,
+      rows: 10,
+      page: 1,
+      sortField: "",
+      sortOrder: "",
+      filters: ["name", "status"],
+      totalPages: 0,
+    };
+    await getAllData(defaultLazyData);
+    NProgress.done();
+    setLoading(false);
+  };
 
   const actionBodyTemplate = (data) => {
     return (
@@ -119,7 +180,7 @@ const CategoryList = () => {
           icon="pi pi-trash"
           className="p-button-rounded p-button-danger  me-2 btn-sm"
           size="sm"
-          //   onClick={() => deleteDataHandler(data.id)}
+          onClick={() => deleteDataHandler(data.id)}
         />
       </>
     );
@@ -182,7 +243,7 @@ const CategoryList = () => {
         <IconField iconPosition="left">
           <InputIcon className="pi pi-search" />
           <InputText
-              onChange={onGlobalFilterChange}
+            onChange={onGlobalFilterChange}
             placeholder="Keyword Search"
           />
         </IconField>
@@ -200,8 +261,7 @@ const CategoryList = () => {
     };
     await getAllData(defaultLazyData);
   };
-    const onSort = async (event) => {
-      
+  const onSort = async (event) => {
     setLoading(true);
     NProgress.start();
     defaultLazyData = {
@@ -221,42 +281,42 @@ const CategoryList = () => {
     const value = event.value;
     setSelectedData(value);
     setSelectAll(value.length === totalRecords);
-    };
-    const imageBodyTemplate = (data) => {
-        return (
-          <img
-            src={`${data.file && data.file !== null ? data.file.path : defaultImage}`}
-          
-            alt={`${data.file && data.file !== null ? data.file.name: ""}`}
-          
-            className=" shadow-2 border-round"
-            style={{ width: "5rem" }}
-          />
-        );
-    };
-    
-    const statusBodyTemplate = (data) => {
-        return <Tag value={data.status} severity={getSeverity(data)}></Tag>;
-    };
+  };
+  const imageBodyTemplate = (data) => {
+    return (
+      <img
+        src={`${
+          data.file && data.file !== null ? data.file.path : defaultImage
+        }`}
+        alt={`${data.file && data.file !== null ? data.file.name : ""}`}
+        className=" shadow-2 border-round"
+        style={{ width: "5rem" }}
+      />
+    );
+  };
 
-    const parentCategoryBodyTemplate = (data) => {
-        if (data.parent !== null) {
-            return data.parent.name;
-        }
+  const statusBodyTemplate = (data) => {
+    return <Tag value={data.status} severity={getSeverity(data)}></Tag>;
+  };
+
+  const parentCategoryBodyTemplate = (data) => {
+    if (data.parent !== null) {
+      return data.parent.name;
     }
-    
-    const getSeverity = (data) => {
-        switch (data.status) {
-          case "active":
-            return "success";
-    
-          case "inactive":
-            return "danger";
-    
-          default:
-            return null;
-        }
-      };
+  };
+
+  const getSeverity = (data) => {
+    switch (data.status) {
+      case "active":
+        return "success";
+
+      case "inactive":
+        return "danger";
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <div>
@@ -334,11 +394,7 @@ const CategoryList = () => {
                     body={statusBodyTemplate}
                     sortable
                   ></Column>
-                  <Column
-                    header="Actions"
-                    body={actionBodyTemplate}
-                    
-                  ></Column>
+                  <Column header="Actions" body={actionBodyTemplate}></Column>
                 </DataTable>
               </Card.Body>
             </Card>
