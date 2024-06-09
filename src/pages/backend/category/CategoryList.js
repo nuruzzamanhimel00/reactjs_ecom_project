@@ -22,6 +22,7 @@ import {
   Column,
   Tag,
   MySwal,
+  selectedCategoryDltUrl,
 } from "../../../helpers/global-files.js";
 //default image
 import defaultImage from "../../../assets/images/default.png";
@@ -144,6 +145,57 @@ const CategoryList = () => {
     // alert("deleteDataHandler");
   };
 
+  const selectedItemDeleteHandler = async (e) => {
+    e.preventDefault();
+    if (selectedData && selectedData.length > 0) {
+      let delete_ids = selectedData.map((item) => item.id);
+
+      await MySwal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+        preConfirm: async () => {
+          NProgress.start();
+          setLoading(true);
+
+          await httpRequest({
+            url: selectedCategoryDltUrl,
+            method: "POST",
+            headers: authHeaders(),
+            body: {
+              ids: delete_ids,
+            },
+          })
+            .then((response) => {
+              setLoading(false);
+              NProgress.done();
+
+              if (response && response.status) {
+                reloadDatatableHandler();
+                NProgress.done();
+                setLoading(false);
+                MySwal.fire({
+                  title: "Deleted!",
+                  text: "Your file has been deleted.",
+                  icon: "success",
+                });
+              }
+              console.log("response", response);
+              // console.log("loader result", response);
+            })
+            .catch((error) => {
+              setLoading(false);
+              return "";
+            });
+        },
+      });
+    }
+  };
+
   const reloadDatatableHandler = async () => {
     setLoading(true);
     NProgress.start();
@@ -237,7 +289,7 @@ const CategoryList = () => {
             loading={loading}
             className="rounded-pill me-2"
             size="small"
-            // onClick={selectedItemDeleteHandler}
+            onClick={selectedItemDeleteHandler}
           />
         </div>
         <IconField iconPosition="left">

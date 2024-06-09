@@ -49,6 +49,7 @@ import {
   categoryTypeUrl,
   selectedCategoryTypeDltUrl,
   categoryUrl,
+  selectedCategoryDltUrl,
 } from "../helpers/apiRoutes/index.js";
 
 //prime react
@@ -82,6 +83,7 @@ const MySwal = withReactContent(Swal);
 
 
 export {
+  selectedCategoryDltUrl,
   categoryUrl,
   ToastNotification,
   useSelector,
