@@ -67,7 +67,7 @@ const validate = (values) => {
     errors.name = "Must be 15 characters or less";
   }
 
-  if (!values.file.path) {
+  if (values.file !== null &&!values.file.path) {
     errors.file = "Required";
   }
 
@@ -459,7 +459,7 @@ const CategoryTypeList = () => {
           setShow(true);
         }
       
-        // console.log("response", response);
+        console.log("response", response);
     
       })
       .catch((error) => {
@@ -486,14 +486,14 @@ const CategoryTypeList = () => {
           setModalConfig((prevData) => {
             return {
               ...prevData,
-              header: "view Category Type",
-              type: "view",
+              header: "edit Category Type",
+              type: "edit",
             };
           });
           setShow(true);
         }
       
-        // console.log("response", response);
+        console.log("response", response);
     
       })
       .catch((error) => {
@@ -761,7 +761,7 @@ const CategoryTypeList = () => {
                         }
                       
                       </Form.Group>
-                      {formik.values.file !== "" && (
+                      {formik.values.file !== null && (
                         <div className="multile_image">
                           <div className="image_preview">
                             {["image/jpeg", "image/jpg", "image/png"].includes(
