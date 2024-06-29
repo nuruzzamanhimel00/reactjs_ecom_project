@@ -117,7 +117,7 @@ const CategoryList = () => {
       header: "",
       backdrop: "static",
       size: "lg",
-      method_type: "create",
+      type: "create",
     });
   
     //formik
@@ -276,8 +276,7 @@ const CategoryList = () => {
                 icon: "success",
               });
             }
-            // console.log("response", response);
-            // console.log("loader result", response);
+          
           })
           .catch((error) => {
             setLoading(false);
@@ -369,7 +368,7 @@ const CategoryList = () => {
           icon="pi pi-pencil"
           className="p-button-rounded p-button-success me-2 btn-sm"
           size="sm"
-          //   onClick={() =>editHandler (data.id)}
+            onClick={() =>editHandler (data.id)}
         />
         <Button
           icon="pi pi-trash"
@@ -380,6 +379,53 @@ const CategoryList = () => {
       </>
     );
   };
+
+  const editHandler = async (id) =>{
+
+    setLoading(true);
+    NProgress.start();
+    await httpRequest({
+      url: categoryUrl+"/"+id,
+      method: "GET",
+      headers: authHeaders(),
+    })
+      .then((response) => {
+        setLoading(false);
+        NProgress.done();
+        if (response !== null) {
+        
+          formik.setValues({ ...response,file:response.file !== null ? response.file: null,method_type:'edit',id:id });
+      
+          setModalConfig((prevData) => {
+            return {
+              ...prevData,
+              header: "edit Category",
+              type: "edit",
+            };
+          });
+          setShow(true);
+
+          //data category type 
+          if (categoryTypes.length > 0) {
+            let findCT = categoryTypes.find((item) => item.id === response.category_type_id);
+            if (findCT) {
+              setSelectedCategoryType(findCT);
+            }
+          }
+          //set edit category
+          if (Categories.length > 0 && response.parent != null) {
+            let findCT = Categories.find((item) => item.id === response.parent.id);
+            if (findCT) {
+              setSelectedCategories(findCT);
+            }
+          }
+
+          
+        }
+      
+    
+      });
+  }
 
   const createHandler = () => {
     setModalConfig((prevData) => {
@@ -847,7 +893,7 @@ const panelFooterTemplate = () => {
                         }
                       
                       </Form.Group>
-                      {formik.values.file !== '' && (
+                      {formik.values.file !== null && (
                         <div className="multile_image">
                           <div className="image_preview">
                             {["image/jpeg", "image/jpg", "image/png"].includes(
