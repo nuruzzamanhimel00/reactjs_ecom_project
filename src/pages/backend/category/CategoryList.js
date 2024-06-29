@@ -23,9 +23,25 @@ import {
   Tag,
   MySwal,
   selectedCategoryDltUrl,
+  Form,
+  Image,
+  Dropdown,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  uuidv4,
+  useDispatch,
 } from "../../../helpers/global-files.js";
 //default image
 import defaultImage from "../../../assets/images/default.png";
+
+//modal
+import BootstrapModal from "../../../components/admin/UI/BootstrapModal.js";
+
+//redux slice
+import { toasterActions } from "../../../store/toast-slice.js";
+        
+
+import { useFormik } from "formik";
 
 let defaultLazyData = {
   first: 0,
@@ -39,13 +55,122 @@ let defaultLazyData = {
 
 let searchColumn = "";
 
+
+// which keys are symmetrical to our values/initialValues
+const validate = (values) => {
+  const errors = {};
+  if (!values.name) {
+    errors.name = "Required";
+  } else if (values.name.length > 100) {
+    errors.name = "Must be 100 characters or less";
+  }
+
+  if (!values.file ) {
+    errors.file = "Required";
+  }
+
+  if (!values.status) {
+    errors.status = "Required";
+  }
+  if (!values.category_type_id) {
+    errors.category_type_id = "Required";
+  }
+
+  return errors;
+};
+
+const initialValues  =  {
+  name: "",
+  category_type_id: "",
+  parent_id: "",
+  status: "active",
+  file: "",
+  id: "",
+  method_type:'create'
+}
+
 const CategoryList = () => {
+    //redux
+  const dispatch = useDispatch();
+  
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
   const [lazyState, setlazyState] = useState({ ...defaultLazyData });
   const [selectAll, setSelectAll] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
+  const [categoryTypes, setCategoryTypes] = useState([])
+  const [selectedCategoryType, setSelectedCategoryType] = useState(null);
+  const [Categories, SetCategories] = useState([])
+  const [selectedCategories, setSelectedCategories] = useState(null)
+    //modal
+    const [show, setShow] = useState(false);
+    const [modalConfig, setModalConfig] = useState({
+      footer: {
+        cancle_btn: "Close",
+      },
+      header: "",
+      backdrop: "static",
+      size: "lg",
+      method_type: "create",
+    });
+  
+    //formik
+
+    const formik = useFormik({
+      initialValues: initialValues,
+  
+      validate,
+      onSubmit: async (values, { resetForm }) => {
+        NProgress.start();
+  
+        await httpRequest({
+          url: values.method_type === 'create' ? categoryUrl : categoryUrl+"/"+values.id,
+          method: values.method_type === 'create' ? "POST" : "PUT",
+          headers: authHeaders(),
+          body: values,
+        })
+          .then((response) => {
+            NProgress.done();
+            if (response.hasOwnProperty('errors')) {
+              Object.keys(response.errors).forEach((key) => {
+                dispatch(
+                  toasterActions.addToast({
+                    id: new Date().getTime(),
+                    severity: "error",
+                    summary: "Error Message",
+                    detail: response.errors[key][0],
+                    life: 3000,
+                  })
+                );
+              
+              })
+            
+            } else {
+                // // Reset the form to initial values
+              resetForm();
+              if (response && response.status) {
+                setShow(false);
+                reloadDatatableHandler();
+                dispatch(
+                  toasterActions.addToast({
+                    id: new Date().getTime(),
+                    severity: "success",
+                    summary: "Success Message",
+                    detail: response.message,
+                    life: 3000,
+                  })
+                );
+              }
+            }
+          
+          
+          })
+          
+      },
+    });
+  
+  
 
   useEffect(() => {
     getAllData(defaultLazyData);
@@ -61,19 +186,32 @@ const CategoryList = () => {
     })
       .then((response) => {
         setLoading(false);
-        if (response && response.data.length > 0) {
-          response.data.forEach((item) => {
+        if (response && response.P_categories.data.length > 0) {
+          response.P_categories.data.forEach((item) => {
             item.image = "bamboo-watch.jpg";
           });
-          setTotalRecords(response.total);
-          setData(response.data);
+          setTotalRecords(response.P_categories.total);
+          setData(response.P_categories.data);
           defaultLazyData = {
             ...data,
-            totalPages: response.total,
+            totalPages: response.P_categories.total,
           };
           setlazyState((prevData) => {
             return { ...prevData, ...defaultLazyData };
           });
+          //category type set
+          setCategoryTypes([
+            ...response.category_types.map((item) => {
+              return {
+                name: item.name,
+                id: item.id,
+              }
+            })
+          ])
+          //all categories set
+          SetCategories([
+            ...response.Categories
+          ])
         } else {
           setData([]);
         }
@@ -238,6 +376,35 @@ const CategoryList = () => {
     );
   };
 
+  const createHandler = () => {
+    setModalConfig((prevData) => {
+      return {
+        ...prevData,
+        header: "Create Category",
+        type:'create'
+      };
+    });
+    setShow(true);
+    //reset formik
+    resetFormikData();
+    formik.setFieldValue("method_type", "create");
+    formik.setFieldValue("id", "");
+  };
+
+  const resetFormikData = () => {
+  
+    formik.setValues(initialValues);
+    
+    // formik.resetForm({ values: initialValues });
+    formik.setErrors({});
+    //state date reset
+    setSelectedCategoryType(null)
+    setSelectedCategories(null)
+  
+  }
+
+
+
   const renderHeader = () => {
     return (
       <div className="d-flex justify-content-between">
@@ -248,7 +415,7 @@ const CategoryList = () => {
             rounded
             loading={loading}
             className="rounded-pill me-2"
-            // onClick={createHandler}
+            onClick={createHandler}
             size="small"
           />
           <Button
@@ -370,10 +537,310 @@ const CategoryList = () => {
     }
   };
 
+  const handleClose = () => {
+    setShow(false);
+    resetFormikData()
+
+  };
+
+  //dropdown select
+  const selectedCategoryTypeTemplate = (option, props) => {
+      if (option) {
+          return (
+              <div className="flex align-items-center">
+                  <div>{option.name}</div>
+              </div>
+          );
+      }
+
+      return <span>{props.placeholder}</span>;
+  };
+
+  const categoryTypeOptionTemplate = (option) => {
+    return (
+        <div className="flex align-items-center">
+            <div>{option.name}</div>
+        </div>
+    );
+};
+
+  
+
+const panelFooterTemplate = () => {
+  return (
+      <div className="py-2 px-3">
+          {selectedCategoryType ? (
+              <span>
+                  <b>{selectedCategoryType.name}</b> selected.
+              </span>
+          ) : (
+              'No category type selected.'
+          )}
+      </div>
+  );
+  };
+  
+
+  const setSelectedCategoryTypeHandler = (value) => {
+    let fomikData = { ...formik.values };
+    fomikData.category_type_id = value.id;
+    formik.setValues({ ...fomikData });
+    setSelectedCategoryType(value);
+  }
+  
+  const setSelectedCategoryHandler = (value) => {
+    let fomikData = { ...formik.values };
+    fomikData.parent_id = value.id;
+    formik.setValues({ ...fomikData });
+    setSelectedCategories(value);
+  }
+  const fileChangeHandler = (event) => {
+    let fomikData = { ...formik.values };
+
+    let allowedExtension = ["image/jpeg", "image/jpg", "image/png"];
+    let file = event.target.files[0];
+    console.log('file',file)
+
+    if (!allowedExtension.includes(file.type)) {
+      alert("Invalid file type");
+      return false;
+    }
+    //bae64 encode the file
+    let uuid = uuidv4();
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      fomikData.file = {
+        id: uuid,
+        type: file.type,
+        name: file.name,
+        path: event.target.result,
+      };
+
+      formik.setValues({ ...fomikData });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const deleteFileHandler = (event) => {
+    event.preventDefault();
+    //reset file input 
+    var formFile = document.getElementById('formFile');
+    formFile.value = '';
+    formik.setFieldValue("file", ""); // Reset the email field
+  };
+
   return (
     <div>
       {/* Toaster Prime React  */}
       <ToastNotification />
+      
+      <BootstrapModal show={show} onHide={handleClose} {...modalConfig}>
+        <form onSubmit={formik.handleSubmit}>
+        
+          <Row>
+            <Col md={12}>
+              <Card>
+                <Card.Body>
+                  <Row>
+                    <Col md={6}>
+                      <Form.Group
+                        className="mb-3"
+                        controlId="exampleForm.ControlInput1"
+                      >
+                        <Form.Label>Name </Form.Label>
+
+                        <Form.Control
+                          name="name"
+                          type="text"
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          value={formik.values.name}
+                          disabled ={modalConfig.type === 'view' ? true : false }
+                          
+                        />
+
+                        {formik.errors.name && formik.touched.name ? (
+                          <div className="text-danger">
+                            {formik.errors.name}
+                          </div>
+                        ) : null}
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group
+                        className="mb-3 row"
+                        controlId="exampleForm.ControlInput1"
+                      >
+                        <Form.Label className="col-md-12">Parent Category </Form.Label>
+
+                        <Dropdown
+                        
+                          value={selectedCategories}
+                          onChange={(e) => setSelectedCategoryHandler(e.value)}
+                          options={Categories}
+                          onBlur={formik.handleBlur}
+                          optionLabel="name"
+                          placeholder="Select a Category Type" 
+                          valueTemplate={selectedCategoryTypeTemplate}
+                          itemTemplate={categoryTypeOptionTemplate}
+                          panelFooterTemplate={panelFooterTemplate} 
+                          dropdownIcon={(opts) => {
+                            return opts.iconProps['data-pr-overlay-visible'] ? <ChevronRightIcon {...opts.iconProps} /> : <ChevronDownIcon {...opts.iconProps} />;
+                        }}
+                          className="w-full md:w-14rem col-md-12" />
+
+                      
+
+                        {formik.errors.parent_id && formik.touched.parent_id ? (
+                          <div className="text-danger">
+                            {formik.errors.parent_id}
+                          </div>
+                        ) : null}
+                      </Form.Group>
+                    </Col>
+                    
+                    <Col md={6}>
+                      <Form.Group
+                        className="mb-3 row"
+                        controlId="exampleForm.ControlInput1"
+                      >
+                        <Form.Label className="col-md-12">Category Types </Form.Label>
+
+                        <Dropdown
+                        
+                          value={selectedCategoryType}
+                          onChange={(e) => setSelectedCategoryTypeHandler(e.value)} options={categoryTypes}
+                          onBlur={formik.handleBlur}
+                          optionLabel="name"
+                          placeholder="Select a Category Type" 
+                          valueTemplate={selectedCategoryTypeTemplate}
+                          itemTemplate={categoryTypeOptionTemplate}
+                          panelFooterTemplate={panelFooterTemplate} 
+                          dropdownIcon={(opts) => {
+                            return opts.iconProps['data-pr-overlay-visible'] ? <ChevronRightIcon {...opts.iconProps} /> : <ChevronDownIcon {...opts.iconProps} />;
+                        }}
+                          className="w-full md:w-14rem col-md-12" />
+
+                      
+
+                        {formik.errors.category_type_id && formik.touched.category_type_id ? (
+                          <div className="text-danger">
+                            {formik.errors.category_type_id}
+                          </div>
+                        ) : null}
+                      </Form.Group>
+                      <Form.Group
+                        className="mb-3"
+                        controlId="exampleForm.ControlInput1"
+                      >
+                        <Form.Label>Status</Form.Label>
+
+                        <div className="d-flex">
+                          <Form.Check
+                            className="me-3" // prettier-ignore
+                            type="radio"
+                            name="status"
+                            id={`default-Active`}
+                            label={` Active`}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            checked={formik.values.status === "active"}
+                            value="active"
+                            disabled ={modalConfig.type === 'view' ? true : false }
+                          />
+                          <Form.Check // prettier-ignore
+                            type="radio"
+                            id={`default-Inactive`}
+                            name="status"
+                            label={` Inactive`}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            checked={formik.values.status === "inactive"}
+                            value="inactive"
+                            disabled ={modalConfig.type === 'view' ? true : false }
+                          />
+                        </div>
+                        {formik.errors.status && formik.touched.status ? (
+                          <div className="text-danger">
+                            {formik.errors.status}
+                          </div>
+                        ) : null}
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group
+                        controlId="formFile"
+                        className="mb-3 d-flex flex-column"
+                      >
+                        <Form.Label>Images</Form.Label>
+                        {
+                          modalConfig.type !== 'view' && 
+                          <input
+                          id="formFile"
+                          type="file"
+                          accept="image/*"
+                          name="file"
+                          onChange={fileChangeHandler}
+                          // onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                        />
+                        }
+                      
+                      </Form.Group>
+                      {formik.values.file !== '' && (
+                        <div className="multile_image">
+                          <div className="image_preview">
+                            {["image/jpeg", "image/jpg", "image/png"].includes(
+                              formik.values.file.type
+                            ) ? (
+                              <div>
+                                <Image
+                                  src={formik.values.file.path}
+                                  alt="Image"
+                                  width="100"
+                                  preview
+                                />
+                                <p>{formik.values.file.name}</p>
+                              </div>
+                            ) : (
+                              ''
+                            )}
+                            {
+                              modalConfig.type !== 'view'  && formik.values.file !== '' ? 
+                              <div>
+                              <button
+                                className="btn btn-danger btn-sm"
+                                onClick={deleteFileHandler}
+                              >
+                                Delete
+                              </button>
+                            </div> : ''
+                            }
+                          
+                          </div>
+                        </div>
+                      )}
+                      {formik.errors.file &&  formik.touched.file? (
+                        <div className="text-danger">{formik.errors.file}</div>
+                      ) : null}
+                    </Col>
+                    
+
+                
+                  
+                  </Row>
+                  {
+                    modalConfig.type !== 'view' && 
+                    <Button label="Submit" type="submit" />
+                  }
+                
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </form>
+      </BootstrapModal>
       <Container>
         <Row>
           <Col md={12}>

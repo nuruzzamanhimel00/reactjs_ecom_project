@@ -16,5 +16,5 @@ const toastSlice = createSlice({
   reducers: allReducers,
 });
 
-export const authActions = toastSlice.actions;
+export const toasterActions = toastSlice.actions;
 export default toastSlice.reducer;

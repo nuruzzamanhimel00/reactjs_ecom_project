@@ -44,7 +44,7 @@ import { useFormik } from "formik";
 import ToastNotification from "../../../components/ToastNotification.js";
 
 //redux slice
-import { authActions } from "../../../store/toast-slice.js";
+import { toasterActions } from "../../../store/toast-slice.js";
 
 let defaultLazyData = {
   first: 0,
@@ -136,7 +136,7 @@ const CategoryTypeList = () => {
             setShow(false);
             reloadDatatableHandler();
             dispatch(
-              authActions.addToast({
+              toasterActions.addToast({
                 id: new Date().getTime(),
                 severity: "success",
                 summary: "Success Message",
@@ -675,6 +675,9 @@ const CategoryTypeList = () => {
 
   const deleteFileHandler = (event) => {
     event.preventDefault();
+      //reset file input 
+      var formFile = document.getElementById('formFile');
+      formFile.value = '';
     formik.setFieldValue("file", ""); // Reset the email field
   };
 

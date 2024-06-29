@@ -31,6 +31,10 @@ import Card from "react-bootstrap/Card";
 import Breadcrumb from "react-bootstrap/Breadcrumb";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
+//dowpdown select
+import { Dropdown } from 'primereact/dropdown';
+import { ChevronDownIcon } from 'primereact/icons/chevrondown';
+import { ChevronRightIcon } from 'primereact/icons/chevronright';
 
 //services
 import { httpRequest } from "../services/CommonService.js";
@@ -83,6 +87,9 @@ const MySwal = withReactContent(Swal);
 
 
 export {
+  Dropdown,
+  ChevronDownIcon,
+  ChevronRightIcon,
   selectedCategoryDltUrl,
   categoryUrl,
   ToastNotification,

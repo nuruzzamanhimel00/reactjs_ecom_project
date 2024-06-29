@@ -162,3 +162,7 @@
 .p-datatable-tbody tr td,.p-datatable-thead tr th{
     border: 2px solid #DF9 !important;
 }
+
+.p-connected-overlay-enter-done{
+    z-index: 9999 !important;
+}
