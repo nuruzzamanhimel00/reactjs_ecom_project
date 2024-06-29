@@ -30,6 +30,11 @@ import {
   ChevronRightIcon,
   uuidv4,
   useDispatch,
+  jsPDF,
+  autoTable,
+  saveAs,
+  XLSX,
+
 } from "../../../helpers/global-files.js";
 //default image
 import defaultImage from "../../../assets/images/default.png";
@@ -403,6 +408,60 @@ const CategoryList = () => {
   
   }
 
+    //jsPdf
+    const doc = new jsPDF();
+  const pdfGenerateHandler = () => {
+    setLoading(true);
+    NProgress.start();
+    setTimeout(() => {
+      if (data.length > 0) {
+        NProgress.done();
+        setLoading(false);
+        autoTable(doc, {
+          head: [["No", "Name", "Parent Category","Status"]],
+          body: data.map((item, key) => {
+            let parent = item.parent != null ? item.parent.name : ''
+            return [key + 1, item.name,parent,  item.status];
+          }),
+        });
+
+        doc.save("categories.pdf");
+      }
+    }, 1000);
+  };
+
+  const generateExcelHandler = () => {
+    setLoading(true);
+    NProgress.start();
+    setTimeout(() => {
+      NProgress.done();
+      setLoading(false);
+      if (data.length > 0) {
+        let newdata = data.map((item, key) => {
+          return {
+            no: key + 1,
+            name: item.name,
+            parent_category: item.parent != null ? item.parent.name : '',
+            status: item.status,
+          };
+        });
+
+        const worksheet = XLSX.utils.json_to_sheet(newdata);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "categories");
+        const excelBuffer = XLSX.write(workbook, {
+          bookType: "xlsx",
+          type: "array",
+        });
+        const blob = new Blob([excelBuffer], {
+          type: "application/octet-stream",
+        });
+        saveAs(blob, "categories.xlsx");
+
+        // console.log("newdata", newdata);
+      }
+    }, 1000);
+  };
 
 
   const renderHeader = () => {
@@ -425,7 +484,7 @@ const CategoryList = () => {
             rounded
             loading={loading}
             className="rounded-pill me-2"
-            // onClick={pdfGenerateHandler}
+            onClick={pdfGenerateHandler}
             size="small"
           />
           <Button
@@ -435,7 +494,7 @@ const CategoryList = () => {
             rounded
             loading={loading}
             className="rounded-pill me-2"
-            // onClick={generateExcelHandler}
+            onClick={generateExcelHandler}
             size="small"
           />
           <Button
@@ -445,7 +504,7 @@ const CategoryList = () => {
             rounded
             loading={loading}
             className="rounded-pill me-2"
-            // onClick={reloadDatatableHandler}
+            onClick={reloadDatatableHandler}
             size="small"
           />
           <Button
