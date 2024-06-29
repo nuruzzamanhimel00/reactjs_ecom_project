@@ -205,18 +205,22 @@ const CategoryList = () => {
             return { ...prevData, ...defaultLazyData };
           });
           //category type set
-          setCategoryTypes([
+          let customCategoryType = [
             ...response.category_types.map((item) => {
               return {
                 name: item.name,
                 id: item.id,
               }
             })
-          ])
+          ]
+        
+          // Add the new object to the beginning of the array
+          customCategoryType.unshift({ name: "Select Category Type", id: null });
+          setCategoryTypes(customCategoryType)
+          let customCategories = [...response.Categories]
+          customCategories.unshift({ name: "Select Category", id: null });
           //all categories set
-          SetCategories([
-            ...response.Categories
-          ])
+          SetCategories(customCategories)
         } else {
           setData([]);
         }
@@ -418,7 +422,15 @@ const CategoryList = () => {
             if (findCT) {
               setSelectedCategories(findCT);
             }
+            
           }
+          if (Categories.length > 0) {
+              //without current category
+          let withoutCurrentCat = Categories.filter((item) => item.id !== id)
+          console.log('withoutCurrentCat',withoutCurrentCat)
+          SetCategories([...withoutCurrentCat])
+          }
+        
 
           
         }
@@ -772,6 +784,7 @@ const panelFooterTemplate = () => {
                         ) : null}
                       </Form.Group>
                     </Col>
+                    
                     <Col md={6}>
                       <Form.Group
                         className="mb-3 row"
