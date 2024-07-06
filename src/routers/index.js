@@ -10,7 +10,9 @@ import CategoryTyepCreate from "../pages/backend/category-types/CategoryTyepCrea
 //category
 import Category from "../pages/backend/category/index.js"
 import CategoryList from "../pages/backend/category/CategoryList.js"
-
+//units
+import Units from "../pages/backend/units/index.js"
+import UnitList from "../pages/backend/units/UnitList.js"
 
 import { loader as admiRootLoader } from "./AdminRoot.js";
 import { loader as adminLoginLoader } from "../pages/backend/auth/AdminLogin.js";
@@ -72,6 +74,20 @@ const router = createBrowserRouter([
           },
         ]
       },
+      {
+        path: 'unit',
+        element: <Units />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="list" replace />,
+          },
+          {
+            path: "list",
+            element: <UnitList />,
+          },
+        ]
+      }
     ],
   },
 ]);

@@ -11,3 +11,6 @@ export const selectedCategoryTypeDltUrl =
 export const categoryUrl = BASE_URL + "/api/categories";
 export const selectedCategoryDltUrl =
   BASE_URL + "/api/selected/category-delete";
+
+//units
+export const unitsUrl = BASE_URL + "/api/units";
